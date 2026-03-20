@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
+import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Ticket } from 'lucide-react'
 
 export default async function EventsPage() {
@@ -37,6 +38,7 @@ export default async function EventsPage() {
             const tiers  = event.ticket_tiers as any[]
             const prices = tiers?.map(t => Number(t.price)) ?? []
             const minPrice = prices.length ? Math.min(...prices) : null
+            const imageUrl = resolveEventImageUrl(supabase, event.image_url)
 
             return (
               <Link
@@ -46,9 +48,9 @@ export default async function EventsPage() {
               >
                 {/* Image */}
                 <div className="h-44 bg-zinc-100 overflow-hidden">
-                  {event.image_url ? (
+                  {imageUrl ? (
                     <img
-                      src={event.image_url}
+                      src={imageUrl}
                       alt={event.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />

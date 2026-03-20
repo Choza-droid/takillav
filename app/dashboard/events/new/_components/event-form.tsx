@@ -94,18 +94,19 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
         )}
       </div>
 
-      {/* Image URL */}
+      {/* Event image */}
       <div>
-        <label htmlFor="image_url" className="block text-sm font-medium text-zinc-700 mb-1">
-          URL de imagen del evento
+        <label htmlFor="image_file" className="block text-sm font-medium text-zinc-700 mb-1">
+          Imagen del evento
         </label>
         <input
-          id="image_url"
-          name="image_url"
-          type="url"
-          placeholder="https://..."
+          id="image_file"
+          name="image_file"
+          type="file"
+          accept="image/*"
           className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
         />
+        <p className="mt-1 text-xs text-zinc-400">Opcional. Formatos recomendados: JPG, PNG o WEBP.</p>
       </div>
 
       {/* Error */}

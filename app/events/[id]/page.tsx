@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
+import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Users, ArrowLeft } from 'lucide-react'
-import { buyTicket } from './actions'
+import CheckoutPanel from './_components/checkout-panel'
 
 export default async function EventDetailPage({
   params,
@@ -32,6 +33,7 @@ export default async function EventDetailPage({
   const { data: { user } } = await supabase.auth.getUser()
 
   const venue = event.venues as any
+  const imageUrl = resolveEventImageUrl(supabase, event.image_url)
 
   return (
     <div className="max-w-4xl space-y-8">
@@ -74,10 +76,10 @@ export default async function EventDetailPage({
           )}
         </div>
 
-        {event.image_url && (
+        {imageUrl && (
           <div className="md:col-span-2">
             <img
-              src={event.image_url}
+              src={imageUrl}
               alt={event.title}
               className="w-full aspect-square rounded-2xl object-cover"
             />
@@ -126,14 +128,11 @@ export default async function EventDetailPage({
                       Agotado
                     </p>
                   ) : user ? (
-                    <form action={buyTicket.bind(null, tier.id, id)}>
-                      <button
-                        type="submit"
-                        className="w-full py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors"
-                      >
-                        Comprar boleto
-                      </button>
-                    </form>
+                    <CheckoutPanel
+                      eventId={id}
+                      tierId={tier.id}
+                      availableTickets={tier.available_tickets}
+                    />
                   ) : (
                     <Link
                       href={`/login?next=/events/${id}`}

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
+import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { Ticket, CalendarDays, MapPin, QrCode, ShieldCheck, Zap } from 'lucide-react'
 
 export default async function Home() {
@@ -105,6 +106,7 @@ export default async function Home() {
               const tiers  = event.ticket_tiers as any[]
               const prices = tiers?.map(t => Number(t.price)) ?? []
               const minPrice = prices.length ? Math.min(...prices) : null
+              const imageUrl = resolveEventImageUrl(supabase, event.image_url)
 
               return (
                 <Link
@@ -113,9 +115,9 @@ export default async function Home() {
                   className="group rounded-2xl border border-zinc-200 overflow-hidden hover:border-zinc-400 hover:shadow-sm transition-all"
                 >
                   <div className="h-44 bg-zinc-100 overflow-hidden">
-                    {event.image_url ? (
+                    {imageUrl ? (
                       <img
-                        src={event.image_url}
+                        src={imageUrl}
                         alt={event.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

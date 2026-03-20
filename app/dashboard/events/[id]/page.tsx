@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
+import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Ticket, Globe, FileText } from 'lucide-react'
 import TierForm from './_components/tier-form'
 import TierList from './_components/tier-list'
@@ -43,6 +44,7 @@ export default async function EventDetailPage({
     .order('price')
 
   const venue = event.venues as any
+  const imageUrl = resolveEventImageUrl(supabase, event.image_url)
   const statusStyle: Record<string, string> = {
     draft:     'bg-zinc-100 text-zinc-600',
     published: 'bg-green-100 text-green-700',
@@ -88,9 +90,9 @@ export default async function EventDetailPage({
             </p>
           )}
         </div>
-        {event.image_url && (
+        {imageUrl && (
           <img
-            src={event.image_url}
+            src={imageUrl}
             alt={event.title}
             className="w-24 h-24 rounded-xl object-cover shrink-0"
           />
