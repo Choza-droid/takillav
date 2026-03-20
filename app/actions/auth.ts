@@ -19,8 +19,9 @@ export async function login(
 
   if (error) return { error: error.message }
 
+  const next = formData.get('next') as string | null
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  redirect(next && next.startsWith('/') ? next : '/dashboard')
 }
 
 export async function signup(

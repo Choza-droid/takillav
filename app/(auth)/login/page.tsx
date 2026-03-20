@@ -1,17 +1,22 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { login } from '@/app/actions/auth'
 
 export default function LoginPage() {
   const [state, action, pending] = useActionState(login, null)
+  const searchParams = useSearchParams()
+  const next = searchParams.get('next') ?? ''
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-8">
       <h2 className="text-xl font-semibold text-zinc-900 mb-6">Iniciar sesión</h2>
 
       <form action={action} className="space-y-4">
+        {next && <input type="hidden" name="next" value={next} />}
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1">
             Correo electrónico

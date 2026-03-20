@@ -10,5 +10,5 @@ export default async function Home() {
 
   if (user) redirect('/dashboard')
 
-  redirect('/login')
+  redirect('/events')
 }
