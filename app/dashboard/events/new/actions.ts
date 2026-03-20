@@ -1,0 +1,54 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { createClient } from '@/utils/supabase/server'
+
+export async function createEvent(
+  prevState: { error: string } | null,
+  formData: FormData
+) {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autorizado' }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'organizer') return { error: 'Solo organizadores pueden crear eventos' }
+
+  const title      = formData.get('title') as string
+  const description = formData.get('description') as string
+  const event_date = formData.get('event_date') as string
+  const venue_id   = formData.get('venue_id') as string
+  const image_url  = formData.get('image_url') as string
+  const status     = formData.get('status') as string
+
+  if (!title?.trim())  return { error: 'El título es requerido' }
+  if (!event_date)     return { error: 'La fecha es requerida' }
+
+  const { data: event, error } = await supabase
+    .from('events')
+    .insert({
+      organizer_id: user.id,
+      title:        title.trim(),
+      description:  description?.trim() || null,
+      event_date,
+      venue_id:     venue_id  || null,
+      image_url:    image_url?.trim() || null,
+      status:       status || 'draft',
+    })
+    .select('id')
+    .single()
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/dashboard/events')
+  redirect(`/dashboard/events/${event.id}`)
+}
