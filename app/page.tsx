@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { Ticket, CalendarDays, MapPin, QrCode, ShieldCheck, Zap } from 'lucide-react'
+import Navbar from '@/components/navbar'
 
 export default async function Home() {
   const cookieStore = await cookies()
@@ -24,40 +25,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
 
-      {/* Nav */}
-      <header className="border-b border-zinc-100">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold text-zinc-900 text-lg">
-            <Ticket size={20} />
-            Takilla
-          </Link>
-          <nav className="flex items-center gap-3 text-sm">
-            <Link href="/events" className="text-zinc-500 hover:text-zinc-900 transition-colors">
-              Eventos
-            </Link>
-            {user ? (
-              <Link
-                href="/dashboard"
-                className="px-4 py-1.5 rounded-lg bg-zinc-900 text-white font-medium hover:bg-zinc-700 transition-colors"
-              >
-                Mi cuenta
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                  Iniciar sesión
-                </Link>
-                <Link
-                  href="/signup"
-                  className="px-4 py-1.5 rounded-lg bg-zinc-900 text-white font-medium hover:bg-zinc-700 transition-colors"
-                >
-                  Registrarse
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero */}
       <section className="bg-zinc-900 text-white">

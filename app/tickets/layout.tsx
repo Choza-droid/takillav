@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import Navbar from '@/components/navbar'
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function TicketsLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 

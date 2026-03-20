@@ -18,5 +18,5 @@ export default async function DashboardPage() {
   if (profile?.role === 'admin')     redirect('/dashboard/admin')
   if (profile?.role === 'organizer') redirect('/dashboard/events')
 
-  redirect('/dashboard/tickets')
+  redirect('/tickets')
 }

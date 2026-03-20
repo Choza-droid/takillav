@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 export type ValidationResult =
   | { success: true;  message: string; ticket: { eventTitle: string; tierName: string; ownerName: string } }
@@ -19,8 +20,9 @@ export async function validateTicket(hash: string): Promise<ValidationResult> {
 
   if (!rpc.success) return { success: false, message: rpc.message }
 
-  // Fetch ticket details to show on screen
-  const { data: ticket } = await supabase
+  // Fetch ticket details bypassing RLS — the ticket was already authenticated via RPC
+  const admin = createAdminClient()
+  const { data: ticket } = await admin
     .from('tickets')
     .select('events(title), ticket_tiers(name), profiles(full_name)')
     .eq('id', rpc.ticket_id!)
@@ -30,7 +32,7 @@ export async function validateTicket(hash: string): Promise<ValidationResult> {
     success: true,
     message: rpc.message,
     ticket: {
-      eventTitle: (ticket?.events as any)?.title    ?? '—',
+      eventTitle: (ticket?.events as any)?.title      ?? '—',
       tierName:   (ticket?.ticket_tiers as any)?.name ?? '—',
       ownerName:  (ticket?.profiles as any)?.full_name ?? 'Sin nombre',
     },

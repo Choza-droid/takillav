@@ -39,7 +39,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
   const event = Array.isArray(tier.events)
     ? (tier.events[0] as { title: string; status: string; event_date: string } | undefined)
-    : null
+    : (tier.events as { title: string; status: string; event_date: string } | null)
   if (!event || event.status !== 'published') redirect(`/events/${eventId}`)
 
   const cappedQuantity = Math.min(Math.max(quantity, 1), 10)
