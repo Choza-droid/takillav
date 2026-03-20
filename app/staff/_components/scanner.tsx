@@ -7,15 +7,23 @@ import { validateTicket, type ValidationResult } from '../actions'
 type ScanState = 'scanning' | 'loading' | 'result'
 
 export default function Scanner() {
-  const videoRef        = useRef<HTMLVideoElement>(null)
-  const scannerRef      = useRef<any>(null)
-  const lastHashRef     = useRef('')
-  const [state, setState]   = useState<ScanState>('scanning')
-  const [result, setResult] = useState<ValidationResult | null>(null)
+  const videoRef    = useRef<HTMLVideoElement>(null)
+  const scannerRef  = useRef<any>(null)
+  const lastHashRef = useRef('')
+  const stateRef    = useRef<ScanState>('scanning') // ref para evitar stale closure en el callback del scanner
+
+  const [state, setStateRaw]  = useState<ScanState>('scanning')
+  const [result, setResult]   = useState<ValidationResult | null>(null)
   const [camError, setCamError] = useState<string | null>(null)
 
+  // Mantiene el ref sincronizado con el estado
+  const setState = useCallback((s: ScanState) => {
+    stateRef.current = s
+    setStateRaw(s)
+  }, [])
+
   const handleScan = useCallback(async (hash: string) => {
-    if (hash === lastHashRef.current || state !== 'scanning') return
+    if (hash === lastHashRef.current || stateRef.current !== 'scanning') return
     lastHashRef.current = hash
 
     setState('loading')
@@ -24,46 +32,44 @@ export default function Scanner() {
     const res = await validateTicket(hash)
     setResult(res)
     setState('result')
-  }, [state])
+  }, [setState])
 
   const reset = useCallback(() => {
     setResult(null)
     lastHashRef.current = ''
     setState('scanning')
     scannerRef.current?.start()
-  }, [])
+  }, [setState])
 
-  // Auto-reset after 5 seconds on success
+  // Auto-reset 5s después de un resultado exitoso
   useEffect(() => {
     if (state !== 'result' || !result?.success) return
     const t = setTimeout(reset, 5000)
     return () => clearTimeout(t)
   }, [state, result, reset])
 
+  // Inicializa el scanner una sola vez
   useEffect(() => {
     if (!videoRef.current) return
-
     let mounted = true
 
     import('qr-scanner').then(({ default: QrScanner }) => {
       if (!mounted || !videoRef.current) return
 
-      // Tell qr-scanner where the worker lives
       QrScanner.WORKER_PATH = '/qr-scanner-worker.min.js'
 
       const scanner = new QrScanner(
         videoRef.current,
         (result) => handleScan(result.data),
         {
-          preferredCamera:    'environment',
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
+          preferredCamera:          'environment',
+          highlightScanRegion:      true,
+          highlightCodeOutline:     true,
           returnDetailedScanResult: true,
         }
       )
 
       scannerRef.current = scanner
-
       scanner.start().catch(() => {
         if (mounted) setCamError('No se pudo acceder a la cámara. Verifica los permisos del navegador.')
       })
@@ -73,22 +79,15 @@ export default function Scanner() {
       mounted = false
       scannerRef.current?.destroy()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [handleScan])
 
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center bg-zinc-950">
 
-      {/* Camera */}
       <div className="relative w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900">
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          playsInline
-          muted
-        />
+        <video ref={videoRef} className="w-full h-full object-cover" playsInline muted />
 
-        {/* Scan region indicator */}
+        {/* Visor de escaneo */}
         {state === 'scanning' && !camError && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="relative w-52 h-52">
@@ -101,7 +100,7 @@ export default function Scanner() {
           </div>
         )}
 
-        {/* Camera error */}
+        {/* Error de cámara */}
         {camError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-zinc-900/95 p-6 text-center">
             <CameraOff size={36} className="text-zinc-500" />
@@ -109,23 +108,22 @@ export default function Scanner() {
           </div>
         )}
 
-        {/* Loading */}
+        {/* Cargando */}
         {state === 'loading' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/60">
             <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin" />
           </div>
         )}
 
-        {/* Result overlay */}
+        {/* Resultado */}
         {state === 'result' && result && (
-          <div className={`absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 transition-colors ${
+          <div className={`absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 ${
             result.success ? 'bg-green-600/95' : 'bg-red-600/95'
           }`}>
             {result.success
               ? <CheckCircle size={64} strokeWidth={1.5} className="text-white" />
               : <XCircle    size={64} strokeWidth={1.5} className="text-white" />
             }
-
             <p className="text-3xl font-bold text-white">
               {result.success ? '¡VÁLIDO!' : 'INVÁLIDO'}
             </p>

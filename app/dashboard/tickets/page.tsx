@@ -34,7 +34,7 @@ export default async function TicketsPage() {
           <p className="font-semibold text-zinc-700">No tienes boletos aún</p>
           <p className="text-sm text-zinc-400 mt-1">Explora los eventos disponibles y compra tus boletos</p>
           <Link
-            href="/"
+            href="/events"
             className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors"
           >
             <FileSearch size={15} />

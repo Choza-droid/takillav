@@ -23,7 +23,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
       <header className="border-b border-zinc-800 px-4 h-14 flex items-center justify-between">
-        <Link href="/staff" className="flex items-center gap-2 font-bold">
+        <Link href="/" className="flex items-center gap-2 font-bold">
           <Ticket size={18} />
           Takilla Staff
         </Link>

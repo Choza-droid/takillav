@@ -42,7 +42,7 @@ export default async function DashboardLayout({
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
 
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2 font-bold text-zinc-900">
+            <Link href="/" className="flex items-center gap-2 font-bold text-zinc-900">
               <Ticket size={18} />
               Takilla
             </Link>

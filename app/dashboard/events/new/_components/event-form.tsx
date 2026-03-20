@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
+import Link from 'next/link'
 import { createEvent } from '../actions'
 
 type Venue = { id: string; name: string; city: string }
@@ -116,12 +117,12 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
 
       {/* Submit */}
       <div className="flex items-center justify-end gap-3 pt-2">
-        <a
+        <Link
           href="/dashboard/events"
           className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           Cancelar
-        </a>
+        </Link>
         <button
           type="submit"
           disabled={pending}
