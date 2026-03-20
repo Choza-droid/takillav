@@ -3,8 +3,6 @@
 import { updateEventStatus } from '../actions'
 import { Globe, FileText, XCircle } from 'lucide-react'
 
-type Status = 'draft' | 'published' | 'cancelled'
-
 export default function StatusActions({
   eventId,
   currentStatus,

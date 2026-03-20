@@ -4,6 +4,20 @@ import { createClient } from '@/utils/supabase/server'
 import { approveApplication, rejectApplication } from './actions'
 import { CheckCircle, XCircle, Clock } from 'lucide-react'
 
+type ApplicationProfile = {
+  full_name: string | null
+  email: string | null
+}
+
+function getApplicationProfile(value: unknown): ApplicationProfile | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const profile = value as Record<string, unknown>
+  return {
+    full_name: typeof profile.full_name === 'string' ? profile.full_name : null,
+    email: typeof profile.email === 'string' ? profile.email : null,
+  }
+}
+
 export default async function AdminPage() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
@@ -66,7 +80,7 @@ export default async function AdminPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-zinc-900">{app.business_name}</p>
                   <p className="text-sm text-zinc-500 mt-0.5">
-                    {(app.profiles as any)?.full_name} · {(app.profiles as any)?.email}
+                    {getApplicationProfile(app.profiles)?.full_name} · {getApplicationProfile(app.profiles)?.email}
                   </p>
                   <p className="text-xs text-zinc-400 mt-0.5">RFC: {app.tax_id}</p>
                 </div>
@@ -107,7 +121,7 @@ export default async function AdminPage() {
               <div key={app.id} className="bg-white rounded-xl border border-zinc-200 px-5 py-3 flex items-center justify-between">
                 <div>
                   <p className="font-medium text-zinc-800">{app.business_name}</p>
-                  <p className="text-sm text-zinc-400">{(app.profiles as any)?.email}</p>
+                  <p className="text-sm text-zinc-400">{getApplicationProfile(app.profiles)?.email}</p>
                 </div>
                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                   app.status === 'approved'

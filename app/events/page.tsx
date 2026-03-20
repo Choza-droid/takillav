@@ -1,8 +1,18 @@
 import { cookies } from 'next/headers'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/utils/supabase/server'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Ticket } from 'lucide-react'
+
+type VenueInfo = {
+  name?: string | null
+  city?: string | null
+}
+
+type TierPrice = {
+  price: number | string
+}
 
 export default async function EventsPage() {
   const cookieStore = await cookies()
@@ -34,8 +44,8 @@ export default async function EventsPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {events.map(event => {
-            const venue  = event.venues as any
-            const tiers  = event.ticket_tiers as any[]
+            const venue  = (event.venues ?? null) as VenueInfo | null
+            const tiers  = (event.ticket_tiers ?? []) as TierPrice[]
             const prices = tiers?.map(t => Number(t.price)) ?? []
             const minPrice = prices.length ? Math.min(...prices) : null
             const imageUrl = resolveEventImageUrl(supabase, event.image_url)
@@ -47,11 +57,14 @@ export default async function EventsPage() {
                 className="group bg-white rounded-2xl border border-zinc-200 overflow-hidden hover:border-zinc-400 hover:shadow-sm transition-all"
               >
                 {/* Image */}
-                <div className="h-44 bg-zinc-100 overflow-hidden">
+                <div className="relative h-44 bg-zinc-100 overflow-hidden">
                   {imageUrl ? (
-                    <img
+                    <Image
                       src={imageUrl}
                       alt={event.title}
+                      fill
+                      unoptimized
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (

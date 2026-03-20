@@ -1,11 +1,19 @@
 'use client'
 
-import { useActionState } from 'react'
+import { Suspense, useActionState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { login } from '@/app/actions/auth'
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <LoginPageContent />
+    </Suspense>
+  )
+}
+
+function LoginPageContent() {
   const [state, action, pending] = useActionState(login, null)
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? ''
@@ -68,6 +76,15 @@ export default function LoginPage() {
           Regístrate
         </Link>
       </p>
+    </div>
+  )
+}
+
+function LoginPageFallback() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-8">
+      <h2 className="text-xl font-semibold text-zinc-900 mb-6">Iniciar sesión</h2>
+      <p className="text-sm text-zinc-500">Cargando formulario...</p>
     </div>
   )
 }

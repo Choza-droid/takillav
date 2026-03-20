@@ -1,10 +1,18 @@
 import { notFound } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/utils/supabase/server'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Users, ArrowLeft } from 'lucide-react'
 import CheckoutPanel from './_components/checkout-panel'
+
+type VenueInfo = {
+  name?: string | null
+  city?: string | null
+  address?: string | null
+  capacity?: number | null
+}
 
 export default async function EventDetailPage({
   params,
@@ -32,7 +40,7 @@ export default async function EventDetailPage({
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const venue = event.venues as any
+  const venue = (event.venues ?? null) as VenueInfo | null
   const imageUrl = resolveEventImageUrl(supabase, event.image_url)
 
   return (
@@ -77,10 +85,13 @@ export default async function EventDetailPage({
         </div>
 
         {imageUrl && (
-          <div className="md:col-span-2">
-            <img
+          <div className="md:col-span-2 relative aspect-square">
+            <Image
               src={imageUrl}
               alt={event.title}
+              fill
+              unoptimized
+              sizes="(min-width: 768px) 40vw, 100vw"
               className="w-full aspect-square rounded-2xl object-cover"
             />
           </div>

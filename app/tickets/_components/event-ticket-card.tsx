@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ChevronDown, Ticket, CalendarDays, MapPin, X } from 'lucide-react'
 import TicketQr from './ticket-qr'
 
@@ -39,9 +40,12 @@ export default function EventTicketCard({ event, tickets }: Props) {
           className="w-full flex items-start gap-4 p-5 text-left hover:bg-zinc-50 transition-colors"
         >
           {event.imageUrl ? (
-            <img
+            <Image
               src={event.imageUrl}
               alt={event.title}
+              width={80}
+              height={80}
+              unoptimized
               className="w-20 h-20 rounded-xl object-cover shrink-0"
             />
           ) : (
