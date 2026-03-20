@@ -54,9 +54,14 @@ export default async function DashboardLayout({
                 </Link>
               )}
               {role === 'organizer' && (
-                <Link href="/dashboard/events" className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                  Mis eventos
-                </Link>
+                <>
+                  <Link href="/dashboard/events" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+                    Mis eventos
+                  </Link>
+                  <Link href="/staff" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+                    Staff App
+                  </Link>
+                </>
               )}
               {role === 'admin' && (
                 <>
@@ -65,6 +70,9 @@ export default async function DashboardLayout({
                   </Link>
                   <Link href="/dashboard/events" className="text-zinc-600 hover:text-zinc-900 transition-colors">
                     Eventos
+                  </Link>
+                  <Link href="/staff" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+                    Staff App
                   </Link>
                 </>
               )}
