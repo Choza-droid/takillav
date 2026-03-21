@@ -25,7 +25,7 @@ export default async function Home() {
       id, title, event_date, image_url,
       venues(name, city),
       ticket_tiers(price)
-    `).eq('status', 'published').order('event_date', { ascending: true }).limit(6),
+    `).eq('status', 'published').gt('event_date', new Date().toISOString()).order('event_date', { ascending: true }).limit(6),
   ])
 
   return (

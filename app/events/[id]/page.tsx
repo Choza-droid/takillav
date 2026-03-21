@@ -45,6 +45,8 @@ export default async function EventDetailPage({
     hour: '2-digit', minute: '2-digit',
   })
 
+  const isPast = new Date(event.event_date) < new Date()
+
   const minPrice = tiers?.length
     ? Math.min(...tiers.map(t => Number(t.price)))
     : null
@@ -138,14 +140,19 @@ export default async function EventDetailPage({
               <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                 Boletos
               </p>
-              {minPrice !== null && (
+              {!isPast && minPrice !== null && (
                 <p className="text-2xl font-bold text-zinc-900 mt-0.5">
                   {minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
                 </p>
               )}
             </div>
 
-            {!tiers?.length ? (
+            {isPast ? (
+              <div className="rounded-xl bg-zinc-50 border border-zinc-200 px-4 py-5 text-center space-y-1">
+                <p className="text-sm font-semibold text-zinc-500">Este evento ya terminó</p>
+                <p className="text-xs text-zinc-400">La venta de boletos está cerrada</p>
+              </div>
+            ) : !tiers?.length ? (
               <p className="text-sm text-zinc-400">
                 No hay boletos disponibles para este evento.
               </p>

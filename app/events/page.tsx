@@ -26,6 +26,7 @@ export default async function EventsPage() {
       ticket_tiers(price)
     `)
     .eq('status', 'published')
+    .gt('event_date', new Date().toISOString())
     .order('event_date', { ascending: true })
 
   return (

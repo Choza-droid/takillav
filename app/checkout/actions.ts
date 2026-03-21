@@ -32,7 +32,7 @@ export async function startStripeCheckout(formData: FormData) {
 
   const { data: tier } = await supabase
     .from('ticket_tiers')
-    .select('id, name, price, available_tickets, event_id, events(title, status)')
+    .select('id, name, price, available_tickets, event_id, events(title, status, event_date)')
     .eq('id', tierId)
     .eq('event_id', eventId)
     .single()
@@ -41,9 +41,10 @@ export async function startStripeCheckout(formData: FormData) {
   if (tier.available_tickets < quantity) throw new Error('No hay boletos suficientes')
 
   const event = Array.isArray(tier.events)
-    ? (tier.events[0] as { title: string; status: string } | undefined)
-    : (tier.events as { title: string; status: string } | null)
+    ? (tier.events[0] as { title: string; status: string; event_date: string } | undefined)
+    : (tier.events as { title: string; status: string; event_date: string } | null)
   if (!event || event.status !== 'published') throw new Error('El evento no está disponible')
+  if (new Date(event.event_date) < new Date()) throw new Error('El evento ya pasó')
 
   const priceNumber = Number(tier.price)
 

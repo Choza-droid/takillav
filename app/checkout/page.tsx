@@ -52,6 +52,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
   const event = (Array.isArray(tier.events) ? tier.events[0] : tier.events) as EventInfo | null
   if (!event || event.status !== 'published') redirect(`/events/${eventId}`)
+  if (new Date(event.event_date) < new Date()) redirect(`/events/${eventId}`)
 
   const cappedQuantity = Math.min(Math.max(quantity, 1), 10)
   const finalQuantity = Math.min(cappedQuantity, tier.available_tickets)
