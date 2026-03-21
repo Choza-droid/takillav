@@ -1,17 +1,71 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link'
+import { Loader2 } from 'lucide-react'
 import { createEvent } from '../actions'
-import FormButton from '@/components/form-button'
+import { createClient } from '@/utils/supabase/client'
+import { EVENT_IMAGES_BUCKET } from '@/utils/supabase/storage'
 
 type Venue = { id: string; name: string; city: string }
 
 export default function EventForm({ venues }: { venues: Venue[] }) {
-  const [state, action] = useActionState(createEvent, null)
+  const [state, action, isActionPending] = useActionState(createEvent, null)
+  const [uploading, setUploading] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
+
+  const isPending = uploading || isActionPending
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (isPending) return
+    setLocalError(null)
+
+    const formData = new FormData(e.currentTarget)
+    const imageFile = formData.get('image_file') as File | null
+    formData.delete('image_file')
+
+    if (imageFile && imageFile.size > 0) {
+      if (!imageFile.type.startsWith('image/')) {
+        setLocalError('El archivo debe ser una imagen válida')
+        return
+      }
+
+      setUploading(true)
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        setUploading(false)
+        setLocalError('No autorizado')
+        return
+      }
+
+      const ext = imageFile.name.includes('.')
+        ? (imageFile.name.split('.').pop()?.toLowerCase() ?? 'jpg')
+        : 'jpg'
+      const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : 'jpg'
+      const path = `${user.id}/${crypto.randomUUID()}.${safeExt}`
+
+      const { error: uploadError } = await supabase.storage
+        .from(EVENT_IMAGES_BUCKET)
+        .upload(path, imageFile, { contentType: imageFile.type, upsert: false })
+
+      setUploading(false)
+
+      if (uploadError) {
+        setLocalError(`No se pudo subir la imagen: ${uploadError.message}`)
+        return
+      }
+
+      formData.set('image_path', path)
+    }
+
+    action(formData)
+  }
 
   return (
-    <form action={action} className="bg-white rounded-2xl border border-zinc-200 p-6 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-zinc-200 p-6 space-y-5">
 
       {/* Title */}
       <div>
@@ -107,13 +161,13 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
           accept="image/*"
           className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
         />
-        <p className="mt-1 text-xs text-zinc-400">Opcional. Formatos recomendados: JPG, PNG o WEBP.</p>
+        <p className="mt-1 text-xs text-zinc-400">Opcional. Formatos: JPG, PNG, WEBP. Sin límite de tamaño.</p>
       </div>
 
       {/* Error */}
-      {state?.error && (
+      {(localError || state?.error) && (
         <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
-          {state.error}
+          {localError ?? state?.error}
         </p>
       )}
 
@@ -125,9 +179,18 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
         >
           Cancelar
         </Link>
-        <FormButton className="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700">
-          Crear evento
-        </FormButton>
+        <button
+          type="submit"
+          disabled={isPending}
+          className={`relative overflow-hidden px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-all duration-300 disabled:cursor-not-allowed ${isPending ? 'scale-[0.97]' : ''}`}
+        >
+          <span className={`flex items-center gap-1.5 transition-all duration-300 ${isPending ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>
+            {uploading ? 'Subiendo imagen…' : 'Crear evento'}
+          </span>
+          <span className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isPending ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+            <Loader2 size={15} className="animate-spin" />
+          </span>
+        </button>
       </div>
 
     </form>
