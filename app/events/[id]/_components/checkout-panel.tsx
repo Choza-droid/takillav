@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useState } from 'react'
+import { Minus, Plus } from 'lucide-react'
 
 type CheckoutPanelProps = {
   eventId: string
@@ -13,40 +14,44 @@ export default function CheckoutPanel({
   tierId,
   availableTickets,
 }: CheckoutPanelProps) {
-  const maxSelectable = Math.max(1, Math.min(availableTickets, 10))
-
-  const quantities = useMemo(() => {
-    return Array.from({ length: maxSelectable }, (_, i) => i + 1)
-  }, [maxSelectable])
+  const max = Math.min(availableTickets, 10)
+  const [qty, setQty] = useState(1)
 
   return (
-    <form action="/checkout" method="GET" className="space-y-2">
+    <form action="/checkout" method="GET" className="space-y-3">
       <input type="hidden" name="eventId" value={eventId} />
       <input type="hidden" name="tierId" value={tierId} />
+      <input type="hidden" name="quantity" value={qty} />
 
-      <div className="flex items-center gap-2">
-        <label htmlFor={`qty-${tierId}`} className="text-sm text-zinc-500">
-          Cantidad
-        </label>
-        <select
-          id={`qty-${tierId}`}
-          name="quantity"
-          defaultValue="1"
-          className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+      {/* Quantity stepper */}
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-zinc-500 mr-auto">Cantidad</span>
+        <button
+          type="button"
+          onClick={() => setQty(q => Math.max(1, q - 1))}
+          disabled={qty <= 1}
+          className="w-8 h-8 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-600 hover:bg-zinc-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
-          {quantities.map(q => (
-            <option key={q} value={q}>
-              {q}
-            </option>
-          ))}
-        </select>
+          <Minus size={14} />
+        </button>
+        <span className="w-6 text-center font-semibold text-zinc-900 tabular-nums">
+          {qty}
+        </span>
+        <button
+          type="button"
+          onClick={() => setQty(q => Math.min(max, q + 1))}
+          disabled={qty >= max}
+          className="w-8 h-8 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-600 hover:bg-zinc-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <Plus size={14} />
+        </button>
       </div>
 
       <button
         type="submit"
         className="w-full py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors"
       >
-        Ir a checkout
+        Comprar {qty > 1 ? `${qty} boletos` : 'boleto'}
       </button>
     </form>
   )
