@@ -3,6 +3,7 @@ import { VT323 } from 'next/font/google'
 import { stripe } from '@/utils/stripe/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import TicketQr from '@/app/tickets/_components/ticket-qr'
+import TicketCarousel from './_components/ticket-carousel'
 
 const vt323 = VT323({ weight: '400', subsets: ['latin'] })
 
@@ -124,13 +125,13 @@ export default async function CheckoutSuccessPage({
       </div>
 
       {tickets.length > 0 && (
-        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-4 pb-4 scroll-smooth">
+        <TicketCarousel>
           {tickets.map((ticket, i) => (
             <div key={ticket.id} className="snap-center shrink-0 w-[min(100%,380px)]">
               <RetroTicket ticket={ticket} index={i} />
             </div>
           ))}
-        </div>
+        </TicketCarousel>
       )}
 
       <div className={`text-center px-4 ${vt323.className}`}>
