@@ -18,6 +18,20 @@ function asRequiredMetadata(metadata: Stripe.Metadata | null) {
   return { userId, tierId, quantity }
 }
 
+async function tryRefund(paymentIntentId: string | null, context: string) {
+  if (!paymentIntentId) return
+  try {
+    await stripe.refunds.create({ payment_intent: paymentIntentId })
+    console.log(`[webhook] Reembolso emitido (${context}):`, paymentIntentId)
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    // Already refunded (success page may have beaten us) — not an error
+    if (!msg.toLowerCase().includes('already')) {
+      console.error(`[webhook] Error al emitir reembolso (${context}):`, msg)
+    }
+  }
+}
+
 export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
   if (!webhookSecret) {
@@ -47,6 +61,7 @@ export async function POST(request: Request) {
     if (session.mode === 'payment' && session.payment_status === 'paid') {
       const parsed = asRequiredMetadata(session.metadata)
       if (!parsed) {
+        console.error('[webhook] Metadata inválida en sesión:', session.id)
         return NextResponse.json({ error: 'Invalid checkout metadata' }, { status: 400 })
       }
 
@@ -63,6 +78,15 @@ export async function POST(request: Request) {
       })
 
       if (error) {
+        if (error.message.includes('No hay boletos suficientes')) {
+          console.warn('[webhook] Inventario insuficiente al fulfillment, emitiendo reembolso. Sesión:', session.id)
+          await tryRefund(paymentIntentId, session.id)
+          // Return 200 — Stripe must not retry this, the issue is permanent
+          return NextResponse.json({ received: true })
+        }
+
+        console.error('[webhook] fulfill_checkout_session error:', error.message)
+        // Return 500 for unexpected errors so Stripe retries
         return NextResponse.json({ error: error.message }, { status: 500 })
       }
     }
