@@ -3,11 +3,12 @@
 import { useActionState } from 'react'
 import Link from 'next/link'
 import { createEvent } from '../actions'
+import FormButton from '@/components/form-button'
 
 type Venue = { id: string; name: string; city: string }
 
 export default function EventForm({ venues }: { venues: Venue[] }) {
-  const [state, action, pending] = useActionState(createEvent, null)
+  const [state, action] = useActionState(createEvent, null)
 
   return (
     <form action={action} className="bg-white rounded-2xl border border-zinc-200 p-6 space-y-5">
@@ -124,13 +125,9 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
         >
           Cancelar
         </Link>
-        <button
-          type="submit"
-          disabled={pending}
-          className="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {pending ? 'Creando...' : 'Crear evento'}
-        </button>
+        <FormButton className="px-5 py-2 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700">
+          Crear evento
+        </FormButton>
       </div>
 
     </form>

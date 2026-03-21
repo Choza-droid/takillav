@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { ChevronDown, LogOut } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
+import FormButton from '@/components/form-button'
 
 type MenuItem = { label: string; href: string }
 
@@ -71,13 +72,10 @@ export default function NavbarUserMenu({ userName, roleLabel, menuItems }: Props
 
           <div className="border-t border-zinc-100 mt-1 pt-1">
             <form action={logout}>
-              <button
-                type="submit"
-                className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-              >
+              <FormButton className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 justify-start">
                 <LogOut size={13} />
                 Cerrar sesión
-              </button>
+              </FormButton>
             </form>
           </div>
         </div>

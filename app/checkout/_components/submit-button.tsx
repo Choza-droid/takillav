@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
-import { ShieldCheck, Check } from 'lucide-react'
+import { ShieldCheck, Loader2 } from 'lucide-react'
 
 export default function SubmitButton({
   label,
@@ -39,7 +39,7 @@ export default function SubmitButton({
           pending ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >
-        <Check size={18} strokeWidth={2.5} />
+        <Loader2 size={18} className="animate-spin" />
       </span>
     </button>
   )

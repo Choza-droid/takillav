@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Minus, Plus, Check } from 'lucide-react'
+import { Minus, Plus, Loader2 } from 'lucide-react'
 
 type CheckoutPanelProps = {
   eventId: string
@@ -83,7 +83,7 @@ export default function CheckoutPanel({
             confirmed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <Check size={18} strokeWidth={2.5} />
+          <Loader2 size={18} className="animate-spin" />
         </span>
       </button>
     </form>

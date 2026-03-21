@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { approveApplication, rejectApplication } from './actions'
 import { CheckCircle, XCircle, Clock } from 'lucide-react'
+import FormButton from '@/components/form-button'
 
 type ApplicationProfile = {
   full_name: string | null
@@ -86,22 +87,16 @@ export default async function AdminPage() {
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <form action={approveApplication.bind(null, app.id)}>
-                    <button
-                      type="submit"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-                    >
+                    <FormButton className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700">
                       <CheckCircle size={14} />
                       Aprobar
-                    </button>
+                    </FormButton>
                   </form>
                   <form action={rejectApplication.bind(null, app.id)}>
-                    <button
-                      type="submit"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-red-600 text-sm font-medium border border-red-200 hover:bg-red-50 transition-colors"
-                    >
+                    <FormButton className="px-3 py-1.5 rounded-lg bg-white text-red-600 text-sm font-medium border border-red-200 hover:bg-red-50">
                       <XCircle size={14} />
                       Rechazar
-                    </button>
+                    </FormButton>
                   </form>
                 </div>
               </div>
