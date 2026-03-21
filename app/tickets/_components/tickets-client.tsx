@@ -144,14 +144,14 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
         })}
       </div>
 
-      {/* ── Wallet overlay — fits screen, no scroll needed ── */}
+      {/* ── Wallet overlay — always fits screen, no scroll ── */}
       {selected && ticket && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col" style={{ height: '100dvh' }}>
 
-          {/* Top bar: counter (left) + close (right) */}
+          {/* Top bar: title (left) + close (right) */}
           <div className="shrink-0 flex items-center justify-between px-4 pt-4 pb-2">
             <span className={`text-sm text-white/50 tracking-widest uppercase ${vt323.className}`}>
-              {total > 1 ? `Boleto ${ticketIndex + 1} de ${total}` : '★ TAKILLA ★'}
+              ★ TAKILLA ★
             </span>
             <button
               onClick={closeWallet}
@@ -161,8 +161,8 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
             </button>
           </div>
 
-          {/* Ticket card — centers in remaining space */}
-          <div className="flex-1 flex items-center justify-center px-4 overflow-hidden">
+          {/* Ticket card — fills remaining space, vertically centered */}
+          <div className="flex-1 min-h-0 flex items-center justify-center px-4">
             <div className={`w-full max-w-xs border-4 border-black bg-amber-50 shadow-[6px_6px_0_0_#000] ${vt323.className}`}>
 
               {/* Header */}
@@ -224,9 +224,9 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
             </div>
           </div>
 
-          {/* Navigation arrows — at the bottom */}
+          {/* Navigation — arrows + "1 / N" counter */}
           {total > 1 && (
-            <div className={`shrink-0 flex items-center justify-center gap-5 px-4 py-4 ${vt323.className}`}>
+            <div className={`shrink-0 flex items-center justify-center gap-6 px-4 py-4 ${vt323.className}`}>
               <button
                 onClick={() => setTicketIndex(i => i - 1)}
                 disabled={ticketIndex === 0}
@@ -235,17 +235,9 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
                 <ChevronLeft size={24} />
               </button>
 
-              <div className="flex items-center gap-2.5">
-                {selected.tickets.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setTicketIndex(i)}
-                    className={`w-3 h-3 rounded-full border-2 border-white transition-colors ${
-                      i === ticketIndex ? 'bg-white' : 'bg-transparent'
-                    }`}
-                  />
-                ))}
-              </div>
+              <span className="text-2xl text-white tracking-widest min-w-[4rem] text-center">
+                {ticketIndex + 1} / {total}
+              </span>
 
               <button
                 onClick={() => setTicketIndex(i => i + 1)}
