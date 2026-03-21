@@ -34,7 +34,7 @@ export default function CheckoutLoading() {
 
             {/* CTA */}
             <div className="px-5 pb-5 space-y-3">
-              <div className="h-12 w-full bg-zinc-200 animate-pulse rounded-xl" />
+              <div className="h-12 w-full bg-gradient-to-r from-amber-200 via-orange-200 to-red-200 animate-pulse rounded-xl" />
               <div className="h-3 w-3/4 bg-zinc-100 animate-pulse rounded mx-auto" />
             </div>
           </div>
