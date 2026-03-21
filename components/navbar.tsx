@@ -1,22 +1,24 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { Ticket } from 'lucide-react'
-import { cacheLife } from 'next/cache'
+import { unstable_cache } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import NavbarUserMenu from './navbar-user-menu'
 
-async function getProfile(userId: string) {
-  'use cache'
-  cacheLife('minutes')
-  const admin = createAdminClient()
-  const { data } = await admin
-    .from('profiles')
-    .select('full_name, role')
-    .eq('id', userId)
-    .single()
-  return data
-}
+const getProfile = unstable_cache(
+  async (userId: string) => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('profiles')
+      .select('full_name, role')
+      .eq('id', userId)
+      .single()
+    return data
+  },
+  ['navbar-profile'],
+  { revalidate: 300 }
+)
 
 const menuByRole: Record<string, { label: string; href: string }[]> = {
   customer: [
