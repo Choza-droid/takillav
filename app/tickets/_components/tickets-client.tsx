@@ -144,117 +144,121 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
         })}
       </div>
 
-      {/* ── Wallet overlay — rendered ONCE at the top level ── */}
+      {/* ── Wallet overlay — fits screen, no scroll needed ── */}
       {selected && ticket && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex flex-col items-center justify-start sm:justify-center pt-16 sm:pt-0 px-5 pb-8 gap-5 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
 
-          {/* Close */}
-          <button
-            onClick={closeWallet}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
-          >
-            <X size={20} />
-          </button>
+          {/* Top bar: counter (left) + close (right) */}
+          <div className="shrink-0 flex items-center justify-between px-4 pt-4 pb-2">
+            <span className={`text-sm text-white/50 tracking-widest uppercase ${vt323.className}`}>
+              {total > 1 ? `Boleto ${ticketIndex + 1} de ${total}` : '★ TAKILLA ★'}
+            </span>
+            <button
+              onClick={closeWallet}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-          {/* Retro ticket */}
-          <div className={`w-full max-w-sm border-4 border-black bg-amber-50 shadow-[8px_8px_0_0_#000] ${vt323.className}`}>
+          {/* Ticket card — centers in remaining space */}
+          <div className="flex-1 flex items-center justify-center px-4 overflow-hidden">
+            <div className={`w-full max-w-xs border-4 border-black bg-amber-50 shadow-[6px_6px_0_0_#000] ${vt323.className}`}>
 
-            {/* Header */}
-            <div className="bg-black text-amber-50 px-5 py-2.5 flex items-center justify-between">
-              <span className="text-2xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
-              <div className="flex items-center gap-3">
-                <span className="text-xl tracking-widest opacity-70">
-                  #{ticketDisplayNumber(ticket.id)}
-                </span>
-                {ticket.is_used && (
-                  <span className="text-xs bg-zinc-600 text-zinc-300 px-2 py-0.5 uppercase tracking-wider">
-                    Usado
+              {/* Header */}
+              <div className="bg-black text-amber-50 px-4 py-2 flex items-center justify-between">
+                <span className="text-xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg tracking-widest opacity-70">
+                    #{ticketDisplayNumber(ticket.id)}
                   </span>
-                )}
+                  {ticket.is_used && (
+                    <span className="text-[10px] bg-zinc-600 text-zinc-300 px-1.5 py-0.5 uppercase tracking-wider">
+                      Usado
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Event info */}
-            <div className="px-5 pt-4 pb-3 space-y-1.5">
-              <p className="text-3xl text-zinc-900 uppercase tracking-wide leading-snug">
-                {selected.eventData.title}
-              </p>
-              <p className="text-lg text-zinc-600 flex items-center gap-1.5 capitalize">
-                <CalendarDays size={14} />
-                {selected.eventData.date}
-              </p>
-              {selected.eventData.venueName && (
-                <p className="text-lg text-zinc-600 flex items-center gap-1.5">
-                  <MapPin size={14} />
-                  {selected.eventData.venueName}
-                  {selected.eventData.venueCity ? ` — ${selected.eventData.venueCity}` : ''}
+              {/* Event info — compact */}
+              <div className="px-4 pt-3 pb-2 space-y-1">
+                <p className="text-2xl text-zinc-900 uppercase tracking-wide leading-snug line-clamp-2">
+                  {selected.eventData.title}
                 </p>
-              )}
-              <p className="text-lg uppercase text-zinc-700">
-                {ticket.tierName}
-                {ticket.price > 0 && (
-                  <span className="ml-2 text-zinc-400">· ${ticket.price.toFixed(2)}</span>
+                <p className="text-base text-zinc-600 flex items-center gap-1.5 capitalize">
+                  <CalendarDays size={12} />
+                  {selected.eventData.date}
+                </p>
+                {selected.eventData.venueName && (
+                  <p className="text-base text-zinc-600 flex items-center gap-1.5 truncate">
+                    <MapPin size={12} />
+                    {selected.eventData.venueName}
+                    {selected.eventData.venueCity ? ` — ${selected.eventData.venueCity}` : ''}
+                  </p>
                 )}
-              </p>
-            </div>
+                <p className="text-base uppercase text-zinc-700">
+                  {ticket.tierName}
+                  {ticket.price > 0 && (
+                    <span className="ml-2 text-zinc-400">· ${ticket.price.toFixed(2)}</span>
+                  )}
+                </p>
+              </div>
 
-            {/* Dashed separator */}
-            <div className="relative flex items-center my-2">
-              <div className="absolute -left-[18px] w-9 h-9 rounded-full bg-zinc-800 border-4 border-black" />
-              <div className="flex-1 border-t-[3px] border-dashed border-black mx-5" />
-              <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-zinc-800 border-4 border-black" />
-            </div>
+              {/* Dashed separator */}
+              <div className="relative flex items-center my-1.5">
+                <div className="absolute -left-[16px] w-8 h-8 rounded-full bg-zinc-800 border-4 border-black" />
+                <div className="flex-1 border-t-[3px] border-dashed border-black mx-4" />
+                <div className="absolute -right-[16px] w-8 h-8 rounded-full bg-zinc-800 border-4 border-black" />
+              </div>
 
-            {/* QR — always visible */}
-            <div className={`px-5 py-5 flex flex-col items-center gap-2 ${ticket.is_used ? 'opacity-40' : ''}`}>
-              <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase self-start">
-                Código de acceso
-              </p>
-              <TicketQr qrHash={ticket.qr_hash} size={220} />
-              <p className="text-base text-zinc-400 tracking-widest uppercase">
-                {ticket.is_used ? 'Este boleto ya fue usado' : 'Muestra al staff en la entrada'}
-              </p>
+              {/* QR */}
+              <div className={`px-4 py-3 flex flex-col items-center gap-1.5 ${ticket.is_used ? 'opacity-40' : ''}`}>
+                <p className="text-[10px] tracking-[0.3em] text-zinc-400 uppercase self-start">
+                  Código de acceso
+                </p>
+                <TicketQr qrHash={ticket.qr_hash} size={170} />
+                <p className="text-sm text-zinc-400 tracking-widest uppercase">
+                  {ticket.is_used ? 'Ya utilizado' : 'Muestra al staff en la entrada'}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Navigation — only when multiple tickets for this event */}
+          {/* Navigation arrows — at the bottom */}
           {total > 1 && (
-            <>
-              <div className={`flex items-center gap-4 ${vt323.className}`}>
-                <button
-                  onClick={() => setTicketIndex(i => i - 1)}
-                  disabled={ticketIndex === 0}
-                  className="w-10 h-10 border-2 border-white/40 text-white flex items-center justify-center disabled:opacity-30 hover:bg-white/10 transition-colors"
-                >
-                  <ChevronLeft size={20} />
-                </button>
+            <div className={`shrink-0 flex items-center justify-center gap-5 px-4 py-4 ${vt323.className}`}>
+              <button
+                onClick={() => setTicketIndex(i => i - 1)}
+                disabled={ticketIndex === 0}
+                className="w-12 h-12 border-2 border-white/40 text-white flex items-center justify-center disabled:opacity-30 hover:bg-white/10 active:bg-white/20 transition-colors rounded"
+              >
+                <ChevronLeft size={24} />
+              </button>
 
-                <div className="flex items-center gap-2">
-                  {selected.tickets.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setTicketIndex(i)}
-                      className={`w-2.5 h-2.5 rounded-full border-2 border-white transition-colors ${
-                        i === ticketIndex ? 'bg-white' : 'bg-transparent'
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setTicketIndex(i => i + 1)}
-                  disabled={ticketIndex === total - 1}
-                  className="w-10 h-10 border-2 border-white/40 text-white flex items-center justify-center disabled:opacity-30 hover:bg-white/10 transition-colors"
-                >
-                  <ChevronRight size={20} />
-                </button>
+              <div className="flex items-center gap-2.5">
+                {selected.tickets.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setTicketIndex(i)}
+                    className={`w-3 h-3 rounded-full border-2 border-white transition-colors ${
+                      i === ticketIndex ? 'bg-white' : 'bg-transparent'
+                    }`}
+                  />
+                ))}
               </div>
 
-              <p className={`text-sm text-white/50 tracking-widest uppercase ${vt323.className}`}>
-                Boleto {ticketIndex + 1} de {total}
-              </p>
-            </>
+              <button
+                onClick={() => setTicketIndex(i => i + 1)}
+                disabled={ticketIndex === total - 1}
+                className="w-12 h-12 border-2 border-white/40 text-white flex items-center justify-center disabled:opacity-30 hover:bg-white/10 active:bg-white/20 transition-colors rounded"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
           )}
+
+          {/* Safe area bottom */}
+          <div className="shrink-0 h-4" />
         </div>
       )}
     </>

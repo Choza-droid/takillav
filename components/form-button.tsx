@@ -29,7 +29,8 @@ export default function FormButton({
 
       {/* Spinner — slides up into view on pending */}
       <span
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-all duration-300 ${
           pending ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
         }`}
       >

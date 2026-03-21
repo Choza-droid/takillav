@@ -56,6 +56,11 @@ body {
   animation: fade-in 0.45s ease both;
 }
 
+/* Remove 300ms tap delay on mobile */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
 /* Hide scrollbars globally */
 * {
   scrollbar-width: none;
