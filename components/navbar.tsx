@@ -86,10 +86,12 @@ export default async function Navbar() {
   return (
     <header className="bg-white border-b border-zinc-200 relative z-40">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-zinc-900">
-          <Ticket size={18} />
-          Takilla
-        </Link>
+        <Link href="/" className="flex items-center gap-2">
+            <Image src="/images/Artboard 1.png" alt="Takilla" width={28} height={28} className="rounded-md" />
+            <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 bg-clip-text text-transparent font-bold text-lg tracking-tight">
+              Takilla
+            </span>
+          </Link>
         <NavbarUserMenu
           userName={displayName}
           roleLabel={roleLabels[role] ?? 'Cliente'}

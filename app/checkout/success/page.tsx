@@ -126,9 +126,9 @@ export default async function CheckoutSuccessPage({
 
       {tickets.length > 0 && (
         <TicketCarousel>
-          {tickets.map((ticket, i) => (
+          {tickets.map((ticket) => (
             <div key={ticket.id} className="snap-center shrink-0 w-[min(100%,380px)]">
-              <RetroTicket ticket={ticket} index={i} />
+              <RetroTicket ticket={ticket} />
             </div>
           ))}
         </TicketCarousel>
@@ -254,7 +254,13 @@ async function resolveResult(sessionId: string | undefined): Promise<PageResult>
   }
 }
 
-function RetroTicket({ ticket, index }: { ticket: TicketData; index: number }) {
+function ticketDisplayNumber(id: string): string {
+  const hex = id.replace(/-/g, '').slice(0, 8)
+  const num = (parseInt(hex, 16) % 9000) + 1000
+  return String(num)
+}
+
+function RetroTicket({ ticket }: { ticket: TicketData }) {
   const date = ticket.eventDate
     ? new Date(ticket.eventDate)
         .toLocaleDateString('es-MX', {
@@ -268,7 +274,7 @@ function RetroTicket({ ticket, index }: { ticket: TicketData; index: number }) {
       <div className="bg-black text-amber-50 px-5 py-2 flex items-center justify-between">
         <span className="text-2xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
         <span className="text-xl tracking-widest opacity-80">
-          #{String(index + 1).padStart(4, '0')}
+          #{ticketDisplayNumber(ticket.id)}
         </span>
       </div>
 
