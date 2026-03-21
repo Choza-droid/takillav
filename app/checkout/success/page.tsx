@@ -2,8 +2,7 @@ import Link from 'next/link'
 import { VT323 } from 'next/font/google'
 import { stripe } from '@/utils/stripe/server'
 import { createAdminClient } from '@/utils/supabase/admin'
-import TicketQr from '@/app/tickets/_components/ticket-qr'
-import TicketCarousel from './_components/ticket-carousel'
+import RetroTicketWallet from './_components/retro-ticket-wallet'
 
 const vt323 = VT323({ weight: '400', subsets: ['latin'] })
 
@@ -113,9 +112,14 @@ export default async function CheckoutSuccessPage({
   // status === 'success'
   const { tickets } = result
 
+  const walletsTickets = tickets.map(t => ({
+    ...t,
+    displayNumber: ticketDisplayNumber(t.id),
+  }))
+
   return (
-    <main className="flex-1 py-8 space-y-8 overflow-hidden">
-      <div className={`text-center px-4 ${vt323.className}`}>
+    <main className="flex-1 py-8 px-4 space-y-8">
+      <div className={`text-center ${vt323.className}`}>
         <p className="text-6xl tracking-widest text-green-700 uppercase">¡Pago exitoso!</p>
         <p className="text-zinc-500 text-xl mt-1 tracking-wide">
           {tickets.length > 0
@@ -124,17 +128,13 @@ export default async function CheckoutSuccessPage({
         </p>
       </div>
 
-      {tickets.length > 0 && (
-        <TicketCarousel>
-          {tickets.map((ticket) => (
-            <div key={ticket.id} className="snap-center shrink-0 w-[min(100%,380px)]">
-              <RetroTicket ticket={ticket} />
-            </div>
-          ))}
-        </TicketCarousel>
+      {walletsTickets.length > 0 && (
+        <div className="max-w-2xl mx-auto">
+          <RetroTicketWallet tickets={walletsTickets} />
+        </div>
       )}
 
-      <div className={`text-center px-4 ${vt323.className}`}>
+      <div className={`text-center ${vt323.className}`}>
         <Link
           href="/tickets"
           className="inline-block px-6 py-2 border-2 border-black bg-black text-amber-50 text-2xl tracking-widest uppercase hover:bg-zinc-800 transition-colors"
@@ -258,77 +258,4 @@ function ticketDisplayNumber(id: string): string {
   const hex = id.replace(/-/g, '').slice(0, 8)
   const num = (parseInt(hex, 16) % 9000) + 1000
   return String(num)
-}
-
-function RetroTicket({ ticket }: { ticket: TicketData }) {
-  const date = ticket.eventDate
-    ? new Date(ticket.eventDate)
-        .toLocaleDateString('es-MX', {
-          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-        })
-        .toUpperCase()
-    : null
-
-  return (
-    <div className={`border-4 border-black bg-amber-50 shadow-[8px_8px_0_0_#000] ${vt323.className}`}>
-      <div className="bg-black text-amber-50 px-5 py-2 flex items-center justify-between">
-        <span className="text-2xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
-        <span className="text-xl tracking-widest opacity-80">
-          #{ticketDisplayNumber(ticket.id)}
-        </span>
-      </div>
-
-      <div className="px-5 pt-4 pb-3 space-y-3">
-        <div>
-          <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase">Evento</p>
-          <p className="text-3xl text-zinc-900 leading-snug uppercase tracking-wide">
-            {ticket.eventTitle}
-          </p>
-        </div>
-        {date && (
-          <div>
-            <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase">Fecha</p>
-            <p className="text-xl text-zinc-800 tracking-wide">{date}</p>
-          </div>
-        )}
-        {(ticket.venueName || ticket.venueCity) && (
-          <div>
-            <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase">Lugar</p>
-            <p className="text-xl text-zinc-800 tracking-wide uppercase">
-              {[ticket.venueName, ticket.venueCity].filter(Boolean).join(' — ')}
-            </p>
-          </div>
-        )}
-        <div className="flex gap-8">
-          {ticket.tierName && (
-            <div>
-              <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase">Tipo</p>
-              <p className="text-xl text-zinc-800 uppercase">{ticket.tierName}</p>
-            </div>
-          )}
-          {ticket.tierPrice !== null && (
-            <div>
-              <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase">Precio</p>
-              <p className="text-xl text-zinc-800">
-                {ticket.tierPrice === 0 ? 'GRATIS' : `$${ticket.tierPrice.toFixed(2)}`}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="relative flex items-center mx-0 my-1">
-        <div className="absolute -left-[18px] w-9 h-9 rounded-full bg-white border-4 border-black" />
-        <div className="flex-1 border-t-[3px] border-dashed border-black mx-5" />
-        <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-white border-4 border-black" />
-      </div>
-
-      <div className="px-5 py-4 flex flex-col items-center gap-1">
-        <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase self-start">
-          Código de acceso
-        </p>
-        <TicketQr qrHash={ticket.qr_hash} />
-      </div>
-    </div>
-  )
 }
