@@ -13,9 +13,7 @@ export default async function TicketsLayout({ children }: { children: React.Reac
   return (
     <div className="min-h-screen bg-zinc-50">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {children}
-      </main>
+      {children}
     </div>
   )
 }

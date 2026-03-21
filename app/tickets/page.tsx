@@ -1,11 +1,9 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
-import { Ticket, FileSearch } from 'lucide-react'
-import EventTicketCard from './_components/event-ticket-card'
+import TicketsClient from './_components/tickets-client'
 
 export default async function TicketsPage() {
   const cookieStore = await cookies()
@@ -46,8 +44,8 @@ export default async function TicketsPage() {
 
   const eventGroups = (events ?? [])
     .map(event => {
-      const venue      = event.venue_id ? (venueById.get(event.venue_id) ?? null) : null
-      const imageUrl   = resolveEventImageUrl(admin, event.image_url)
+      const venue    = event.venue_id ? (venueById.get(event.venue_id) ?? null) : null
+      const imageUrl = resolveEventImageUrl(admin, event.image_url)
       const groupTickets = (tickets ?? [])
         .filter(t => t.event_id === event.id)
         .map((t, i) => ({
@@ -81,40 +79,27 @@ export default async function TicketsPage() {
   const totalTickets = tickets?.length ?? 0
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Mis boletos</h1>
-        <p className="text-zinc-500 mt-1">
-          {totalTickets === 0
-            ? 'Sin boletos aún'
-            : `${totalTickets} boleto${totalTickets !== 1 ? 's' : ''} en ${eventGroups.length} evento${eventGroups.length !== 1 ? 's' : ''}`}
-        </p>
-      </div>
+    <>
+      {/* Banner */}
+      <section className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white animate-fade-in">
+        <div className="max-w-2xl mx-auto px-4 py-12 space-y-1">
+          <p className="text-white/70 text-sm font-medium uppercase tracking-widest animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+            Tu billetera digital
+          </p>
+          <h1 className="font-display text-5xl leading-none animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+            Mis boletos
+          </h1>
+          {totalTickets > 0 && (
+            <p className="text-white/80 text-base animate-fade-in-up" style={{ animationDelay: '180ms' }}>
+              {totalTickets} boleto{totalTickets !== 1 ? 's' : ''} · {eventGroups.length} evento{eventGroups.length !== 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+      </section>
 
-      {eventGroups.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-zinc-200 p-16 text-center">
-          <Ticket size={40} className="mx-auto text-zinc-300 mb-3" />
-          <p className="font-semibold text-zinc-700">No tienes boletos aún</p>
-          <p className="text-sm text-zinc-400 mt-1">Explora los eventos disponibles y compra tus boletos</p>
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors"
-          >
-            <FileSearch size={15} />
-            Ver eventos
-          </Link>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {eventGroups.map(({ eventData, tickets: groupTickets, eventDate }) => (
-            <EventTicketCard
-              key={eventDate + eventData.title}
-              event={eventData}
-              tickets={groupTickets}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      <main className="max-w-2xl mx-auto px-4 py-6">
+        <TicketsClient eventGroups={eventGroups} />
+      </main>
+    </>
   )
 }
