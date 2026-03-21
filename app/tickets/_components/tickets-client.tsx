@@ -165,15 +165,20 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
           <div className="flex-1 min-h-0 flex items-center justify-center px-4">
             <div className={`w-full max-w-xs border-4 border-black bg-amber-50 shadow-[6px_6px_0_0_#000] ${vt323.className}`}>
 
-              {/* Header */}
-              <div className="bg-black text-amber-50 px-4 py-2 flex items-center justify-between">
-                <span className="text-xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
+              {/* Header — brand gradient */}
+              <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white px-4 py-2.5 flex items-center justify-between">
+                <span
+                  className="text-xl tracking-[0.3em] uppercase"
+                  style={{ textShadow: '1px 1px 0 #c2410c, 2px 2px 0 #9a3412, 3px 3px 6px rgba(0,0,0,0.35)' }}
+                >
+                  ★ TAKILLA ★
+                </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg tracking-widest opacity-70">
+                  <span className="text-lg tracking-widest opacity-80">
                     #{ticketDisplayNumber(ticket.id)}
                   </span>
                   {ticket.is_used && (
-                    <span className="text-[10px] bg-zinc-600 text-zinc-300 px-1.5 py-0.5 uppercase tracking-wider">
+                    <span className="text-[10px] bg-black/30 px-1.5 py-0.5 uppercase tracking-wider rounded-sm">
                       Usado
                     </span>
                   )}
@@ -206,9 +211,9 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
 
               {/* Dashed separator */}
               <div className="relative flex items-center my-1.5">
-                <div className="absolute -left-[16px] w-8 h-8 rounded-full bg-zinc-800 border-4 border-black" />
-                <div className="flex-1 border-t-[3px] border-dashed border-black mx-4" />
-                <div className="absolute -right-[16px] w-8 h-8 rounded-full bg-zinc-800 border-4 border-black" />
+                <div className="absolute -left-[16px] w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-4 border-black" />
+                <div className="flex-1 border-t-[3px] border-dashed border-orange-400 mx-4" />
+                <div className="absolute -right-[16px] w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-4 border-black" />
               </div>
 
               {/* QR */}
@@ -217,7 +222,7 @@ export default function TicketsClient({ eventGroups }: { eventGroups: EventGroup
                   Código de acceso
                 </p>
                 <TicketQr qrHash={ticket.qr_hash} size={170} />
-                <p className="text-sm text-zinc-400 tracking-widest uppercase">
+                <p className="text-sm text-orange-400 tracking-widest uppercase">
                   {ticket.is_used ? 'Ya utilizado' : 'Muestra al staff en la entrada'}
                 </p>
               </div>

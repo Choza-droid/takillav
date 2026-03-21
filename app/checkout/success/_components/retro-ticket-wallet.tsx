@@ -36,10 +36,15 @@ export default function RetroTicketWallet({ tickets }: { tickets: TicketData[] }
       {/* Ticket */}
       <div className={`w-full max-w-sm border-4 border-black bg-amber-50 shadow-[8px_8px_0_0_#000] ${vt323.className}`}>
 
-        {/* Header */}
-        <div className="bg-black text-amber-50 px-5 py-2.5 flex items-center justify-between">
-          <span className="text-2xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
-          <span className="text-xl tracking-widest opacity-70">#{ticket.displayNumber}</span>
+        {/* Header — brand gradient */}
+        <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white px-5 py-2.5 flex items-center justify-between">
+          <span
+            className="text-2xl tracking-[0.3em] uppercase"
+            style={{ textShadow: '1px 1px 0 #c2410c, 2px 2px 0 #9a3412, 3px 3px 6px rgba(0,0,0,0.35)' }}
+          >
+            ★ TAKILLA ★
+          </span>
+          <span className="text-xl tracking-widest opacity-80">#{ticket.displayNumber}</span>
         </div>
 
         {/* Event info */}
@@ -71,9 +76,9 @@ export default function RetroTicketWallet({ tickets }: { tickets: TicketData[] }
 
         {/* Dashed separator */}
         <div className="relative flex items-center my-2">
-          <div className="absolute -left-[18px] w-9 h-9 rounded-full bg-zinc-50 border-4 border-black" />
-          <div className="flex-1 border-t-[3px] border-dashed border-black mx-5" />
-          <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-zinc-50 border-4 border-black" />
+          <div className="absolute -left-[18px] w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-4 border-black" />
+          <div className="flex-1 border-t-[3px] border-dashed border-orange-400 mx-5" />
+          <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-4 border-black" />
         </div>
 
         {/* QR — always visible, no tap needed */}
@@ -82,7 +87,7 @@ export default function RetroTicketWallet({ tickets }: { tickets: TicketData[] }
             Código de acceso
           </p>
           <TicketQr qrHash={ticket.qr_hash} size={200} />
-          <p className="text-base text-zinc-400 tracking-widest uppercase">
+          <p className="text-base text-orange-400 tracking-widest uppercase">
             Muestra al staff en la entrada
           </p>
         </div>
