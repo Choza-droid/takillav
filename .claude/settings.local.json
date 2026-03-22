@@ -11,7 +11,10 @@
       "Bash(find C:UsersvlpizDesktoptakillatakillanode_modulesnextdistdocs -type f -name *streaming* -o -name *suspense* -o -name *performance*)",
       "Bash(grep:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(node -e \"const pkg = require\\(''./node_modules/next/package.json''\\); console.log\\(pkg.version\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(find .next -name *.html)"
     ]
   }
 }
