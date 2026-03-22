@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,11 @@ const bebasNeue = Bebas_Neue({
 export const metadata: Metadata = {
   title: "Takilla — Boletos para tu ciudad",
   description: "Compra y vende boletos para eventos locales",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
