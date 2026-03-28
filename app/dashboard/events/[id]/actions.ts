@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 
-// Crea un evento vacío en borrador y redirige al [id] para editarlo
 export async function createEmptyEvent() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
@@ -50,24 +49,30 @@ export async function updateEvent(
   if (event.organizer_id !== user.id) return { error: 'No tienes permiso para editar este evento' }
   if (event.status === 'published') return { error: 'El evento está publicado. Regresa a borrador para editar.' }
 
-  const title       = formData.get('title') as string
-  const description = formData.get('description') as string
-  const event_date  = formData.get('event_date') as string
-  const venue_id    = formData.get('venue_id') as string
-  const image_path  = (formData.get('image_path') as string | null)?.trim() || null
-  const status      = formData.get('status') as string
-  const category    = formData.get('category') as string
+  const title         = formData.get('title') as string
+  const description   = formData.get('description') as string
+  const event_date    = formData.get('event_date') as string
+  const venue_id      = formData.get('venue_id') as string
+  const image_path    = (formData.get('image_path') as string | null)?.trim() || null
+  const status        = formData.get('status') as string
+  const category      = formData.get('category') as string
+  const location_name = (formData.get('location_name') as string | null)?.trim() || null
+  const location_lat  = formData.get('location_lat') ? Number(formData.get('location_lat')) : null
+  const location_lng  = formData.get('location_lng') ? Number(formData.get('location_lng')) : null
 
   if (!title?.trim()) return { error: 'El título es requerido' }
   if (!event_date)    return { error: 'La fecha es requerida' }
 
   const updateData: Record<string, unknown> = {
-    title:       title.trim(),
-    description: description?.trim() || null,
+    title:         title.trim(),
+    description:   description?.trim() || null,
     event_date,
-    venue_id:    venue_id || null,
-    status:      status || 'draft',
-    category:    category || 'otro',
+    venue_id:      venue_id || null,
+    status:        status || 'draft',
+    category:      category || 'otro',
+    location_name,
+    location_lat:  location_lat && !isNaN(location_lat) ? location_lat : null,
+    location_lng:  location_lng && !isNaN(location_lng) ? location_lng : null,
   }
 
   if (image_path) updateData.image_url = image_path
@@ -112,10 +117,10 @@ export async function addTier(
   const price          = Number(formData.get('price'))
   const total_capacity = Number(formData.get('total_capacity'))
 
-  if (!name?.trim())              return { error: 'El nombre es requerido' }
-  if (isNaN(price) || price < 0)  return { error: 'Precio inválido' }
+  if (!name?.trim())                         return { error: 'El nombre es requerido' }
+  if (isNaN(price) || price < 0)             return { error: 'Precio inválido' }
   if (!total_capacity || total_capacity < 1) return { error: 'Capacidad inválida' }
-  if (total_capacity > 999)       return { error: 'La capacidad máxima es 999' }
+  if (total_capacity > 999)                  return { error: 'La capacidad máxima es 999' }
 
   const { error } = await supabase.from('ticket_tiers').insert({
     event_id,

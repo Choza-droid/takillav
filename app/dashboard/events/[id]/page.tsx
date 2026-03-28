@@ -1,10 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Image from 'next/image'
+import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import {
-  CalendarDays, MapPin, Ticket, Globe,
+  CalendarDays, MapPin, Ticket, Globe, ArrowLeft,
   TrendingUp, Users, DollarSign, Pencil, Lock
 } from 'lucide-react'
 import TierForm from './_components/tier-form'
@@ -69,9 +70,15 @@ export default async function EventDetailPage({
   const boundUpdateEvent = updateEvent.bind(null, id)
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-3xl space-y-8">
 
-      {/* Event header */}
+      {/* Back */}
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-orange-600 transition-colors">
+        <ArrowLeft size={14} />
+        Mis eventos
+      </Link>
+
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
@@ -124,27 +131,38 @@ export default async function EventDetailPage({
             <h2 className="text-base font-semibold text-zinc-900">Editar información</h2>
           </div>
           <EventEditForm
-            venues={(venues ?? []) as Venue[]}
             action={boundUpdateEvent}
             defaultValues={{
-              title:       event.title,
-              description: event.description ?? '',
-              event_date:  event.event_date,
-              venue_id:    event.venue_id ?? '',
-              status:      event.status,
-              image_url:   event.image_url,
-              category:    event.category ?? 'otro',
+              title:         event.title,
+              description:   event.description ?? '',
+              event_date:    event.event_date,
+              status:        event.status,
+              image_url:     event.image_url,
+              category:      event.category ?? null,
+              location_name: event.location_name ?? null,
+              location_lat:  event.location_lat ?? null,
+              location_lng:  event.location_lng ?? null,
             }}
             submitLabel="Guardar cambios"
           />
         </section>
       )}
 
-      {/* PUBLISHED/FINISHED: description readonly */}
-      {!isDraft && event.description && (
-        <p className="text-sm text-zinc-600 bg-white border border-zinc-200 rounded-xl px-4 py-3">
-          {event.description}
-        </p>
+      {/* PUBLISHED/FINISHED: show description + location readonly */}
+      {!isDraft && (
+        <div className="space-y-3">
+          {event.description && (
+            <p className="text-sm text-zinc-600 bg-white border border-zinc-200 rounded-xl px-4 py-3">
+              {event.description}
+            </p>
+          )}
+          {event.location_name && (
+            <p className="text-sm text-zinc-500 bg-white border border-zinc-200 rounded-xl px-4 py-3 flex items-center gap-2">
+              <MapPin size={14} className="text-orange-400 shrink-0" />
+              {event.location_name}
+            </p>
+          )}
+        </div>
       )}
 
       {/* Sales summary */}
@@ -183,6 +201,9 @@ export default async function EventDetailPage({
         </section>
       )}
 
+      {/* Status actions */}
+      {!isFinished && <StatusActions eventId={id} currentStatus={event.status} />}
+
       {/* Tiers */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
@@ -217,10 +238,6 @@ export default async function EventDetailPage({
           </a>
         </div>
       )}
-
-      {/* Status actions — al final */}
-      {!isFinished && <StatusActions eventId={id} currentStatus={event.status} />}
-
     </div>
   )
 }
