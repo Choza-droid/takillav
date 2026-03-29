@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/server'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Users, ArrowLeft, Ticket } from 'lucide-react'
 import CheckoutPanel from './_components/checkout-panel'
+import EventMap from './_components/event-map'
 
 type VenueInfo = {
   name?: string | null
@@ -35,7 +36,7 @@ export default async function EventDetailPage({
 
   if (!event) notFound()
 
-  const venue = (event.venues ?? null) as VenueInfo | null
+  const venue    = (event.venues ?? null) as VenueInfo | null
   const imageUrl = resolveEventImageUrl(supabase, event.image_url)
 
   const dateFormatted = new Date(event.event_date).toLocaleDateString('es-MX', {
@@ -51,31 +52,22 @@ export default async function EventDetailPage({
     ? Math.min(...tiers.map(t => Number(t.price)))
     : null
 
+  const hasLocation = !!(event.location_lat && event.location_lng)
+
+  // Location label: prefer mapbox name, fallback to venue
+  const locationLabel = event.location_name
+    ?? (venue?.name ? `${venue.name}${venue.city ? `, ${venue.city}` : ''}` : null)
+
   return (
     <>
-      {/* Full-width banner with blur-edges effect */}
+      {/* Full-width banner */}
       <div className="relative w-full h-64 md:h-[420px] overflow-hidden bg-zinc-900 animate-fade-in">
         {imageUrl ? (
           <>
-            {/* Blurred background layer — same image scaled up, fills gaps */}
-            <Image
-              src={imageUrl}
-              alt=""
-              fill
-              unoptimized
-              aria-hidden
-              className="object-cover scale-110 blur-2xl opacity-60"
-            />
-            {/* Sharp foreground image — contained so nothing is cropped */}
-            <Image
-              src={imageUrl}
-              alt={event.title}
-              fill
-              unoptimized
-              priority
-              sizes="100vw"
-              className="object-contain"
-            />
+            <Image src={imageUrl} alt="" fill unoptimized aria-hidden
+              className="object-cover scale-110 blur-2xl opacity-60" />
+            <Image src={imageUrl} alt={event.title} fill unoptimized priority
+              sizes="100vw" className="object-contain" />
           </>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-amber-400 via-orange-500 to-red-600">
@@ -83,10 +75,8 @@ export default async function EventDetailPage({
           </div>
         )}
 
-        {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
 
-        {/* Event title + chips overlaid at bottom */}
         <div className="absolute inset-x-0 bottom-0 px-4 pb-6">
           <div className="max-w-5xl mx-auto space-y-2">
             <h1 className="font-display text-white text-4xl md:text-6xl leading-none drop-shadow-md">
@@ -97,10 +87,10 @@ export default async function EventDetailPage({
                 <CalendarDays size={13} />
                 {dateFormatted} · {timeFormatted}
               </span>
-              {venue?.name && (
+              {locationLabel && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
                   <MapPin size={13} />
-                  {venue.name}{venue.city ? `, ${venue.city}` : ''}
+                  {locationLabel}
                 </span>
               )}
               {venue?.capacity && (
@@ -117,26 +107,16 @@ export default async function EventDetailPage({
       {/* Page content */}
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
-        {/* Back */}
-        <Link
-          href="/events"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors animate-fade-in-up"
-        >
+        <Link href="/events"
+          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors animate-fade-in-up">
           <ArrowLeft size={14} />
           Todos los eventos
         </Link>
 
-        {/* Two-column layout: info + tickets */}
         <div className="grid md:grid-cols-3 gap-8 items-start animate-fade-in-up" style={{ animationDelay: '80ms' }}>
 
-          {/* Left — event details (2/3) */}
+          {/* Left — event details */}
           <div className="md:col-span-2 space-y-6">
-            {/* Address */}
-            {venue?.address && (
-              <p className="text-sm text-zinc-500">
-                {venue.address}{venue.city ? `, ${venue.city}` : ''}
-              </p>
-            )}
 
             {/* Description */}
             {event.description && (
@@ -149,15 +129,41 @@ export default async function EventDetailPage({
                 </p>
               </div>
             )}
+
+            {/* Mapbox map */}
+            {hasLocation && (
+              <div className="border-t border-zinc-100 pt-5 space-y-3">
+                <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <MapPin size={13} />
+                  Ubicación
+                </h2>
+                <EventMap
+                  lat={event.location_lat}
+                  lng={event.location_lng}
+                  locationName={event.location_name}
+                />
+              </div>
+            )}
+
+            {/* Venue address fallback (no mapbox coords) */}
+            {!hasLocation && venue?.address && (
+              <div className="border-t border-zinc-100 pt-5 space-y-2">
+                <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <MapPin size={13} />
+                  Ubicación
+                </h2>
+                <p className="text-sm text-zinc-500">
+                  {venue.address}{venue.city ? `, ${venue.city}` : ''}
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Right — tickets card (1/3), sticky on desktop */}
+          {/* Right — tickets */}
           <div className="md:sticky md:top-6 space-y-3">
             <div className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
               <div>
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                  Boletos
-                </p>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Boletos</p>
                 {!isPast && minPrice !== null && (
                   <p className="text-2xl font-bold text-zinc-900 mt-0.5">
                     {minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
@@ -171,9 +177,7 @@ export default async function EventDetailPage({
                   <p className="text-xs text-zinc-400">La venta de boletos está cerrada</p>
                 </div>
               ) : !tiers?.length ? (
-                <p className="text-sm text-zinc-400">
-                  No hay boletos disponibles para este evento.
-                </p>
+                <p className="text-sm text-zinc-400">No hay boletos disponibles para este evento.</p>
               ) : (
                 <div className="space-y-3">
                   {tiers.map(tier => {
@@ -183,12 +187,10 @@ export default async function EventDetailPage({
                       : 0
 
                     return (
-                      <div
-                        key={tier.id}
+                      <div key={tier.id}
                         className={`rounded-xl border p-4 space-y-3 transition-opacity ${
                           soldOut ? 'border-zinc-100 opacity-50' : 'border-zinc-200'
-                        }`}
-                      >
+                        }`}>
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="font-semibold text-zinc-900 truncate">{tier.name}</p>
@@ -201,12 +203,9 @@ export default async function EventDetailPage({
                           </p>
                         </div>
 
-                        {/* Availability bar */}
                         <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-orange-500 to-red-600 rounded-full transition-all"
-                            style={{ width: `${pct}%` }}
-                          />
+                          <div className="h-full bg-gradient-to-r from-orange-500 to-red-600 rounded-full transition-all"
+                            style={{ width: `${pct}%` }} />
                         </div>
 
                         {soldOut ? (
@@ -214,16 +213,10 @@ export default async function EventDetailPage({
                             Agotado
                           </p>
                         ) : user ? (
-                          <CheckoutPanel
-                            eventId={id}
-                            tierId={tier.id}
-                            availableTickets={tier.available_tickets}
-                          />
+                          <CheckoutPanel eventId={id} tierId={tier.id} availableTickets={tier.available_tickets} />
                         ) : (
-                          <Link
-                            href={`/login?next=/events/${id}`}
-                            className="block w-full py-2.5 rounded-xl border border-zinc-300 text-zinc-700 text-sm font-semibold text-center hover:bg-zinc-50 transition-colors"
-                          >
+                          <Link href={`/login?next=/events/${id}`}
+                            className="block w-full py-2.5 rounded-xl border border-zinc-300 text-zinc-700 text-sm font-semibold text-center hover:bg-zinc-50 transition-colors">
                             Inicia sesión para comprar
                           </Link>
                         )}
@@ -235,7 +228,6 @@ export default async function EventDetailPage({
             </div>
           </div>
         </div>
-
       </div>
     </>
   )

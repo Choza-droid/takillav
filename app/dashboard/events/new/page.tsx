@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
-import EventForm from './_components/event-form'
 
 export default async function NewEventPage() {
   const cookieStore = await cookies()
@@ -16,20 +15,21 @@ export default async function NewEventPage() {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'organizer') redirect('/dashboard')
+  if (profile?.role !== 'organizer' && profile?.role !== 'admin') redirect('/dashboard')
 
-  const { data: venues } = await supabase
-    .from('venues')
-    .select('id, name, city')
-    .order('name')
+  // Crear evento vacío en borrador y redirigir al [id]
+  const { data: event, error } = await supabase
+    .from('events')
+    .insert({
+      organizer_id: user.id,
+      title:        'Nuevo evento',
+      status:       'draft',
+      event_date:   new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    })
+    .select('id')
+    .single()
 
-  return (
-    <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Nuevo evento</h1>
-        <p className="text-zinc-500 mt-1">Completa la información básica. Los tiers de boletos se añaden después.</p>
-      </div>
-      <EventForm venues={venues ?? []} />
-    </div>
-  )
+  if (error || !event) redirect('/dashboard')
+
+  redirect(`/dashboard/events/${event.id}`)
 }

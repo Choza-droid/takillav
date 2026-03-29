@@ -175,7 +175,7 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
       {/* Submit */}
       <div className="flex items-center justify-end gap-3 pt-2">
         <Link
-          href="/dashboard/events"
+          href="/dashboard"
           className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           Cancelar
