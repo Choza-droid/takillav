@@ -33,8 +33,11 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${spaceGrotesk.variable} ${bebasNeue.variable} h-full antialiased`}
+      style={{ background: '#12111a' }}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col" style={{ background: '#12111a', color: '#f5f5f5' }}>
+        {children}
+      </body>
     </html>
   );
 }

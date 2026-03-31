@@ -20,14 +20,26 @@ function LoginPageContent() {
   const next = searchParams.get('next') ?? ''
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-8">
-      <h2 className="text-xl font-semibold text-zinc-900 mb-6">Iniciar sesión</h2>
+    <div
+      className="rounded-2xl p-8"
+      style={{
+        background: '#1e1d2a',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 25px 80px rgba(0,0,0,0.4)',
+      }}
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-white">Iniciar sesión</h2>
+        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          Bienvenido de nuevo
+        </p>
+      </div>
 
-      <form action={action} className="space-y-4">
+      <form action={action} className="space-y-5">
         {next && <input type="hidden" name="next" value={next} />}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1">
+          <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Correo electrónico
           </label>
           <input
@@ -36,13 +48,18 @@ function LoginPageContent() {
             type="email"
             required
             autoComplete="email"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
+            className="w-full rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all"
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'white',
+            }}
             placeholder="tu@correo.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-700 mb-1">
+          <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Contraseña
           </label>
           <input
@@ -51,27 +68,41 @@ function LoginPageContent() {
             type="password"
             required
             autoComplete="current-password"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
+            className="w-full rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all"
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'white',
+            }}
             placeholder="••••••••"
           />
         </div>
 
         {state?.error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          <div
+            className="rounded-xl px-4 py-3 text-sm font-medium"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}
+          >
             {state.error}
-          </p>
+          </div>
         )}
 
-        <div className="flex justify-center pt-2">
-          <FormButton className="rounded-lg bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 px-8 py-2 text-sm font-semibold text-white hover:from-amber-500 hover:via-orange-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+        <div className="pt-1">
+          <FormButton
+            className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{
+              background: 'linear-gradient(90deg, #f97316, #ec4899)',
+              boxShadow: '0 0 30px rgba(249,115,22,0.3)',
+            }}
+          >
             Entrar
           </FormButton>
         </div>
       </form>
 
-      <p className="mt-6 text-center text-sm text-zinc-500">
+      <p className="mt-6 text-center text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
         ¿No tienes cuenta?{' '}
-        <Link href="/signup" className="font-medium text-orange-600 hover:text-orange-700 hover:underline">
+        <Link href="/signup" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#f97316' }}>
           Regístrate
         </Link>
       </p>
@@ -81,9 +112,8 @@ function LoginPageContent() {
 
 function LoginPageFallback() {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-8">
-      <h2 className="text-xl font-semibold text-zinc-900 mb-6">Iniciar sesión</h2>
-      <p className="text-sm text-zinc-500">Cargando formulario...</p>
+    <div className="rounded-2xl p-8" style={{ background: '#1e1d2a', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <div className="h-6 w-40 rounded-lg mx-auto animate-pulse" style={{ background: 'rgba(255,255,255,0.08)' }} />
     </div>
   )
 }

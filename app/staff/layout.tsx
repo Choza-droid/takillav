@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
-import { Ticket } from 'lucide-react'
+import { Ticket, ScanLine, Users } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import FormButton from '@/components/form-button'
 
@@ -19,7 +19,20 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'organizer' && profile?.role !== 'admin') redirect('/dashboard')
+  const isOrganizerOrAdmin = profile?.role === 'organizer' || profile?.role === 'admin'
+
+  let isTeamMember = false
+  if (!isOrganizerOrAdmin) {
+    const { data: teamEntry } = await supabase
+      .from('team_members')
+      .select('id')
+      .eq('member_user_id', user.id)
+      .limit(1)
+      .single()
+    isTeamMember = !!teamEntry
+  }
+
+  if (!isOrganizerOrAdmin && !isTeamMember) redirect('/dashboard')
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
@@ -37,9 +50,24 @@ export default async function StaffLayout({ children }: { children: React.ReactN
           </form>
         </div>
       </header>
+
       <main className="flex-1 flex flex-col">
         {children}
       </main>
+
+      {/* Bottom nav */}
+      <nav className="border-t border-zinc-800 bg-zinc-950 flex">
+        <Link href="/staff/team"
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-zinc-500 hover:text-orange-400 transition-colors">
+          <Users size={20} />
+          <span className="text-xs">Eventos</span>
+        </Link>
+        <Link href="/staff"
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-zinc-500 hover:text-orange-400 transition-colors">
+          <ScanLine size={20} />
+          <span className="text-xs">Escanear</span>
+        </Link>
+      </nav>
     </div>
   )
 }
