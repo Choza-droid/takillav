@@ -220,7 +220,7 @@ function EventRowItem({ event, onDelete }: { event: EventRow; onDelete: (id: str
   if (confirmDelete) {
     return (
       <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-5 py-4 gap-4">
-        <p className="text-sm font-medium text-red-800 min-w-0 truncate">¿Borrar <span className="font-semibold">"{event.title}"</span>?</p>
+        <p className="text-sm font-medium text-red-800 min-w-0 truncate">¿Borrar <span className="font-semibold">&quot;{event.title}&quot;</span>?</p>
         <div className="flex items-center gap-2 shrink-0">
           <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startDelete(async () => { await onDelete(event.id) }) }}
             disabled={deleting}
@@ -337,8 +337,8 @@ function TeamSection({ userId }: { userId: string }) {
         const pMap = new Map((profiles ?? []).map(p => [p.id, p]))
         setMembers(mems.map(m => ({
           id: m.id, userId: m.member_user_id, eventId: m.event_id,
-          eventTitle: (m.events as any)?.title ?? '—',
-          eventStatus: (m.events as any)?.status ?? '—',
+          eventTitle: (m.events as { title?: string } | null)?.title ?? '—',
+          eventStatus: (m.events as { status?: string } | null)?.status ?? '—',
           fullName: pMap.get(m.member_user_id)?.full_name ?? 'Sin nombre',
           email: pMap.get(m.member_user_id)?.email ?? '—',
         })))
@@ -347,7 +347,7 @@ function TeamSection({ userId }: { userId: string }) {
       setLoading(false)
     }
     load()
-  }, [userId])
+  }, [userId, supabase])
 
   useEffect(() => {
     if (!success) return
@@ -669,7 +669,7 @@ export default function DashboardPage() {
       setLoading(false)
     }
     load()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     if (section !== 'events' || !profile) return
@@ -687,7 +687,7 @@ export default function DashboardPage() {
       setEventsLoading(false)
     }
     loadEvents()
-  }, [section, profile])
+  }, [section, profile, events.length, supabase])
 
   async function handleDeleteEvent(id: string) {
     const { error } = await supabase.from('events').delete().eq('id', id)

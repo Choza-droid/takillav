@@ -38,7 +38,7 @@ export async function validateTicket(hash: string): Promise<ValidationResult> {
 
     // Only allow published events
     allowedEventIds = (teamEntries ?? [])
-      .filter(e => (e.events as any)?.status === 'published')
+      .filter(e => (e.events as { status?: string } | null)?.status === 'published')
       .map(e => e.event_id)
 
     if (!allowedEventIds.length) {

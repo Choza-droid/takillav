@@ -1,9 +1,10 @@
 'use client'
 
-import { useActionState, useTransition, useState, useEffect, useRef } from 'react'
+import { useActionState, useTransition, useState, useEffect, useRef, useCallback } from 'react'
 import { Loader2, MapPin, X } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { EVENT_IMAGES_BUCKET } from '@/utils/supabase/storage'
+import { Map, Marker } from 'mapbox-gl'
 
 export const CATEGORIES = [
   { value: 'musica',      label: 'Música'        },
@@ -45,8 +46,8 @@ function LocationPicker({
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null)
   const debounceRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mapRef         = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<any>(null)
-  const markerRef      = useRef<any>(null)
+  const mapInstanceRef = useRef<Map | null>(null)
+  const markerRef      = useRef<Marker | null>(null)
 
   // Get user location on mount for proximity bias
   useEffect(() => {
@@ -76,10 +77,10 @@ function LocationPicker({
       } catch { setSuggestions([]) }
       finally { setSearching(false) }
     }, 350)
-  }, [query, userCoords])
+  }, [query, userCoords, token, selected])
 
   // Reverse geocode when user moves pin
-  async function reverseGeocode(lng: number, lat: number) {
+  const reverseGeocode = useCallback(async (lng: number, lat: number) => {
     if (!token) return
     try {
       const res = await fetch(
@@ -92,7 +93,7 @@ function LocationPicker({
     } catch {
       setSelected(prev => prev ? { ...prev, lat, lng } : { name: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, lat, lng })
     }
-  }
+  }, [token])
 
   // Init map when selected changes
   useEffect(() => {
@@ -101,7 +102,7 @@ function LocationPicker({
     async function initMap() {
       const mapboxgl = (await import('mapbox-gl')).default
       await import('mapbox-gl/dist/mapbox-gl.css')
-      ;(mapboxgl as any).accessToken = token
+      mapboxgl.accessToken = token
 
       if (mapInstanceRef.current) {
         mapInstanceRef.current.flyTo({ center: [selected!.lng, selected!.lat], zoom: 15 })
@@ -140,7 +141,7 @@ function LocationPicker({
     }
 
     initMap()
-  }, [selected?.name])
+  }, [selected, token, reverseGeocode])
 
   // Cleanup on unmount
   useEffect(() => {

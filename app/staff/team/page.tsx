@@ -42,8 +42,8 @@ export default async function StaffTeamPage() {
       eventId: e.id,
       eventTitle: e.title,
       eventDate: e.event_date,
-      venueName: (e.venues as any)?.name ?? null,
-      venueCity: (e.venues as any)?.city ?? null,
+      venueName: (e.venues as { name?: string } | null)?.name ?? null,
+      venueCity: (e.venues as { city?: string } | null)?.city ?? null,
       status: e.status,
     }))
   } else {
@@ -53,7 +53,7 @@ export default async function StaffTeamPage() {
       .eq('member_user_id', user.id)
 
     assignments = (teamEntries ?? []).map(t => {
-      const e = t.events as any
+      const e = t.events as { id?: string; title?: string; event_date?: string; status?: string; venues?: { name?: string; city?: string } | null } | null
       return {
         id: t.id,
         eventId: e?.id ?? '',
