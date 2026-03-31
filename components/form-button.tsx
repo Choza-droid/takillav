@@ -6,9 +6,11 @@ import { Loader2 } from 'lucide-react'
 export default function FormButton({
   children,
   className = '',
+  style,
 }: {
   children: React.ReactNode
   className?: string
+  style?: React.CSSProperties
 }) {
   const { pending } = useFormStatus()
 
@@ -16,9 +18,9 @@ export default function FormButton({
     <button
       type="submit"
       disabled={pending}
+      style={style}
       className={`relative overflow-hidden transition-all duration-300 disabled:cursor-not-allowed ${pending ? 'scale-[0.97]' : ''} ${className}`}
     >
-      {/* Label — slides up on pending */}
       <span
         className={`flex items-center gap-1.5 transition-all duration-300 ${
           pending ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'
@@ -27,7 +29,6 @@ export default function FormButton({
         {children}
       </span>
 
-      {/* Spinner — slides up into view on pending */}
       <span
         aria-hidden
         className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-all duration-300 ${

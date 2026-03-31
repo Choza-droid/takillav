@@ -8,8 +8,6 @@ import { createClient } from '@/utils/supabase/client'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { CalendarDays, MapPin, Ticket } from 'lucide-react'
 
-// ─── Categories ──────────────────────────────────────────────────────────────
-
 const CATEGORIES = [
   { value: 'all',         label: 'Todos',         img: null },
   { value: 'musica',      label: 'Música',        img: '/images/musica.2.png'        },
@@ -21,8 +19,6 @@ const CATEGORIES = [
   { value: 'otro',        label: 'Otro',          img: null },
 ]
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface Event {
   id: string
   title: string
@@ -33,8 +29,6 @@ interface Event {
   venues: { name: string; city: string } | null
   ticket_tiers: { price: number }[]
 }
-
-// ─── Event Card ───────────────────────────────────────────────────────────────
 
 function EventCard({ event, supabase, index }: {
   event: Event
@@ -51,11 +45,14 @@ function EventCard({ event, supabase, index }: {
   return (
     <Link
       href={`/events/${event.id}`}
-      className="group bg-white rounded-2xl border border-zinc-200 overflow-hidden hover:border-orange-300 hover:shadow-md transition-all duration-200 animate-fade-in-up flex flex-col"
-      style={{ animationDelay: `${index * 60}ms` }}
+      className="group rounded-2xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl animate-fade-in-up flex flex-col"
+      style={{
+        background: 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        animationDelay: `${index * 60}ms`,
+      }}
     >
-      {/* Image */}
-      <div className="relative h-48 bg-zinc-100 overflow-hidden shrink-0">
+      <div className="relative h-48 overflow-hidden shrink-0" style={{ background: 'rgba(255,255,255,0.06)' }}>
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -66,24 +63,25 @@ function EventCard({ event, supabase, index }: {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200">
-            <Ticket size={36} className="text-zinc-300" />
+          <div className="w-full h-full flex items-center justify-center">
+            <Ticket size={36} style={{ color: 'rgba(255,255,255,0.15)' }} />
           </div>
         )}
-        {/* Category badge over image */}
         {catLabel && event.category !== 'otro' && (
-          <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-black/50 text-white backdrop-blur-sm">
+          <span
+            className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm text-white"
+            style={{ background: 'rgba(249,115,22,0.8)' }}
+          >
             {catLabel}
           </span>
         )}
       </div>
 
-      {/* Info */}
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <p className="font-semibold text-zinc-900 leading-snug line-clamp-2 group-hover:text-orange-600 transition-colors text-base">
+        <p className="font-semibold text-white leading-snug line-clamp-2 group-hover:text-orange-400 transition-colors text-base">
           {event.title}
         </p>
-        <div className="space-y-1 text-sm text-zinc-500 flex-1">
+        <div className="space-y-1 text-sm flex-1" style={{ color: 'rgba(255,255,255,0.45)' }}>
           <p className="flex items-center gap-1.5">
             <CalendarDays size={13} className="shrink-0 text-orange-400" />
             {new Date(event.event_date).toLocaleDateString('es-MX', {
@@ -97,8 +95,8 @@ function EventCard({ event, supabase, index }: {
             </p>
           )}
         </div>
-        <div className="pt-3 border-t border-zinc-100 mt-1">
-          <p className="text-sm font-bold text-zinc-900">
+        <div className="pt-3 mt-1" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <p className="text-sm font-bold" style={{ color: '#f97316' }}>
             {minPrice === null ? 'Sin tiers' : minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
           </p>
         </div>
@@ -106,8 +104,6 @@ function EventCard({ event, supabase, index }: {
     </Link>
   )
 }
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function EventsPage() {
   const searchParams = useSearchParams()
@@ -121,11 +117,8 @@ export default function EventsPage() {
 
   function handleCategoryChange(value: string) {
     setActiveCategory(value)
-    if (value === 'all') {
-      router.replace('/events')
-    } else {
-      router.replace(`/events?category=${value}`)
-    }
+    if (value === 'all') router.replace('/events')
+    else router.replace(`/events?category=${value}`)
   }
 
   useEffect(() => {
@@ -133,18 +126,12 @@ export default function EventsPage() {
       setLoading(true)
       let query = supabase
         .from('events')
-        .select(`
-          id, title, description, event_date, image_url, category,
-          venues(name, city),
-          ticket_tiers(price)
-        `)
+        .select(`id, title, description, event_date, image_url, category, venues(name, city), ticket_tiers(price)`)
         .eq('status', 'published')
         .gt('event_date', new Date().toISOString())
         .order('event_date', { ascending: true })
 
-      if (activeCategory !== 'all') {
-        query = query.eq('category', activeCategory)
-      }
+      if (activeCategory !== 'all') query = query.eq('category', activeCategory)
 
       const { data } = await query
       setEvents((data ?? []) as unknown as Event[])
@@ -156,23 +143,26 @@ export default function EventsPage() {
   const activeCatLabel = CATEGORIES.find(c => c.value === activeCategory)?.label ?? 'Eventos'
 
   return (
-    <>
-      {/* Banner — full width */}
-      <section className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white w-full mb-10 px-4 py-16 animate-fade-in">
+    <div style={{ background: '#12111a', minHeight: '100vh' }}>
+      {/* Banner */}
+      <section
+        className="text-white w-full px-4 py-16 animate-fade-in"
+        style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)' }}
+      >
         <div className="max-w-6xl mx-auto space-y-2">
-          <p className="text-white/70 text-xs font-semibold uppercase tracking-widest">
+          <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)' }}>
             Plataforma de boletos regional
           </p>
-          <h1 className="font-display text-5xl font-bold leading-tight">
+          <h1 className="font-display text-5xl leading-tight">
             {activeCategory === 'all' ? 'Todos los eventos' : activeCatLabel}
           </h1>
-          <p className="text-white/80 text-base max-w-xl">
+          <p className="text-base max-w-xl" style={{ color: 'rgba(255,255,255,0.55)' }}>
             Conciertos, festivales y eventos en vivo cerca de ti.
           </p>
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
 
         {/* Category filter */}
         <div className="flex items-center gap-2 flex-wrap">
@@ -182,14 +172,20 @@ export default function EventsPage() {
               <button
                 key={cat.value}
                 onClick={() => handleCategoryChange(cat.value)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-all border ${
-                  isActive
-                    ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white border-transparent shadow-sm'
-                    : 'bg-white text-zinc-600 border-zinc-200 hover:border-orange-300 hover:text-orange-600'
-                }`}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all"
+                style={isActive ? {
+                  background: 'linear-gradient(90deg, #f97316, #ec4899)',
+                  color: 'white',
+                  boxShadow: '0 0 20px rgba(249,115,22,0.3)',
+                  border: '1px solid transparent',
+                } : {
+                  background: 'rgba(255,255,255,0.04)',
+                  color: 'rgba(255,255,255,0.6)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                }}
               >
                 {cat.img && (
-                  <Image src={cat.img} alt={cat.label} width={16} height={16} className="rounded-sm" />
+                  <Image src={cat.img} alt={cat.label} width={16} height={16} className="rounded-sm brightness-0 invert" />
                 )}
                 {cat.label}
               </button>
@@ -199,7 +195,7 @@ export default function EventsPage() {
 
         {/* Results count */}
         {!loading && (
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
             {events.length === 0
               ? 'Sin resultados'
               : `${events.length} evento${events.length !== 1 ? 's' : ''} encontrado${events.length !== 1 ? 's' : ''}`
@@ -211,25 +207,26 @@ export default function EventsPage() {
         {loading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-zinc-100 overflow-hidden animate-pulse">
-                <div className="h-48 bg-zinc-100" />
+              <div key={i} className="rounded-2xl overflow-hidden animate-pulse" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="h-48" style={{ background: 'rgba(255,255,255,0.06)' }} />
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-zinc-100 rounded w-3/4" />
-                  <div className="h-3 bg-zinc-100 rounded w-1/2" />
-                  <div className="h-3 bg-zinc-100 rounded w-1/3" />
+                  <div className="h-4 rounded w-3/4" style={{ background: 'rgba(255,255,255,0.08)' }} />
+                  <div className="h-3 rounded w-1/2" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                  <div className="h-3 rounded w-1/3" style={{ background: 'rgba(255,255,255,0.06)' }} />
                 </div>
               </div>
             ))}
           </div>
 
         ) : !events.length ? (
-          <div className="text-center py-24 text-zinc-400">
-            <Ticket size={40} className="mx-auto mb-3 opacity-40" />
-            <p className="font-medium text-zinc-600">No hay eventos en esta categoría</p>
+          <div className="text-center py-24">
+            <Ticket size={40} className="mx-auto mb-3 opacity-20 text-white" />
+            <p className="font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>No hay eventos en esta categoría</p>
             {activeCategory !== 'all' && (
               <button
                 onClick={() => handleCategoryChange('all')}
-                className="mt-3 text-sm text-orange-500 hover:text-orange-600 hover:underline transition-colors"
+                className="mt-3 text-sm font-medium hover:opacity-70 transition-opacity"
+                style={{ color: '#f97316' }}
               >
                 Ver todos los eventos →
               </button>
@@ -244,6 +241,6 @@ export default function EventsPage() {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }

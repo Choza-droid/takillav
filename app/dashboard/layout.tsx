@@ -13,5 +13,9 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  return <>{children}</>
+  return (
+    <div style={{ minHeight: '100vh', background: '#12111a' }}>
+      {children}
+    </div>
+  )
 }

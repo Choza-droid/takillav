@@ -54,47 +54,44 @@ export default async function EventDetailPage({
 
   const hasLocation = !!(event.location_lat && event.location_lng)
 
-  // Location label: prefer mapbox name, fallback to venue
   const locationLabel = event.location_name
     ?? (venue?.name ? `${venue.name}${venue.city ? `, ${venue.city}` : ''}` : null)
 
   return (
-    <>
+    <div style={{ background: '#12111a', minHeight: '100vh' }}>
       {/* Full-width banner */}
-      <div className="relative w-full h-64 md:h-[420px] overflow-hidden bg-zinc-900 animate-fade-in">
+      <div className="relative w-full h-64 md:h-[420px] overflow-hidden animate-fade-in" style={{ background: '#1a1a2e' }}>
         {imageUrl ? (
           <>
             <Image src={imageUrl} alt="" fill unoptimized aria-hidden
-              className="object-cover scale-110 blur-2xl opacity-60" />
+              className="object-cover scale-110 blur-2xl opacity-40" />
             <Image src={imageUrl} alt={event.title} fill unoptimized priority
               sizes="100vw" className="object-contain" />
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-amber-400 via-orange-500 to-red-600">
-            <Ticket size={48} className="text-white/40" />
+          <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e, #0f3460)' }}>
+            <Ticket size={48} style={{ color: 'rgba(255,255,255,0.15)' }} />
           </div>
         )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
-
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 px-4 pb-6">
           <div className="max-w-5xl mx-auto space-y-2">
             <h1 className="font-display text-white text-4xl md:text-6xl leading-none drop-shadow-md">
               {event.title}
             </h1>
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-sm font-medium" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
                 <CalendarDays size={13} />
                 {dateFormatted} · {timeFormatted}
               </span>
               {locationLabel && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-sm font-medium" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
                   <MapPin size={13} />
                   {locationLabel}
                 </span>
               )}
               {venue?.capacity && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-sm font-medium" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
                   <Users size={13} />
                   {venue.capacity.toLocaleString('es-MX')} personas
                 </span>
@@ -107,8 +104,11 @@ export default async function EventDetailPage({
       {/* Page content */}
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
-        <Link href="/events"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors animate-fade-in-up">
+        <Link
+          href="/events"
+          className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors animate-fade-in-up hover:opacity-70"
+          style={{ color: 'rgba(255,255,255,0.4)' }}
+        >
           <ArrowLeft size={14} />
           Todos los eventos
         </Link>
@@ -117,23 +117,20 @@ export default async function EventDetailPage({
 
           {/* Left — event details */}
           <div className="md:col-span-2 space-y-6">
-
-            {/* Description */}
             {event.description && (
-              <div className="border-t border-zinc-100 pt-5">
-                <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+              <div className="pt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <h2 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   Acerca del evento
                 </h2>
-                <p className="text-zinc-700 leading-relaxed whitespace-pre-line">
+                <p className="leading-relaxed whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.7)' }}>
                   {event.description}
                 </p>
               </div>
             )}
 
-            {/* Mapbox map */}
             {hasLocation && (
-              <div className="border-t border-zinc-100 pt-5 space-y-3">
-                <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="pt-5 space-y-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <h2 className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   <MapPin size={13} />
                   Ubicación
                 </h2>
@@ -145,14 +142,13 @@ export default async function EventDetailPage({
               </div>
             )}
 
-            {/* Venue address fallback (no mapbox coords) */}
             {!hasLocation && venue?.address && (
-              <div className="border-t border-zinc-100 pt-5 space-y-2">
-                <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="pt-5 space-y-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <h2 className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   <MapPin size={13} />
                   Ubicación
                 </h2>
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
                   {venue.address}{venue.city ? `, ${venue.city}` : ''}
                 </p>
               </div>
@@ -161,23 +157,26 @@ export default async function EventDetailPage({
 
           {/* Right — tickets */}
           <div className="md:sticky md:top-6 space-y-3">
-            <div className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
+            <div
+              className="rounded-2xl p-5 space-y-4"
+              style={{ background: '#1e1d2a', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
               <div>
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Boletos</p>
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Boletos</p>
                 {!isPast && minPrice !== null && (
-                  <p className="text-2xl font-bold text-zinc-900 mt-0.5">
+                  <p className="text-2xl font-bold text-white mt-0.5">
                     {minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
                   </p>
                 )}
               </div>
 
               {isPast ? (
-                <div className="rounded-xl bg-zinc-50 border border-zinc-200 px-4 py-5 text-center space-y-1">
-                  <p className="text-sm font-semibold text-zinc-500">Este evento ya terminó</p>
-                  <p className="text-xs text-zinc-400">La venta de boletos está cerrada</p>
+                <div className="rounded-xl px-4 py-5 text-center space-y-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Este evento ya terminó</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>La venta de boletos está cerrada</p>
                 </div>
               ) : !tiers?.length ? (
-                <p className="text-sm text-zinc-400">No hay boletos disponibles para este evento.</p>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>No hay boletos disponibles para este evento.</p>
               ) : (
                 <div className="space-y-3">
                   {tiers.map(tier => {
@@ -187,36 +186,42 @@ export default async function EventDetailPage({
                       : 0
 
                     return (
-                      <div key={tier.id}
-                        className={`rounded-xl border p-4 space-y-3 transition-opacity ${
-                          soldOut ? 'border-zinc-100 opacity-50' : 'border-zinc-200'
-                        }`}>
+                      <div
+                        key={tier.id}
+                        className={`rounded-xl p-4 space-y-3 transition-opacity ${soldOut ? 'opacity-40' : ''}`}
+                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                      >
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="font-semibold text-zinc-900 truncate">{tier.name}</p>
-                            <p className="text-xs text-zinc-400 mt-0.5">
+                            <p className="font-semibold text-white truncate">{tier.name}</p>
+                            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
                               {tier.available_tickets} de {tier.total_capacity} disponibles
                             </p>
                           </div>
-                          <p className="text-xl font-bold text-zinc-900 shrink-0">
+                          <p className="text-xl font-bold text-white shrink-0">
                             {Number(tier.price) === 0 ? 'Gratis' : `$${Number(tier.price).toFixed(2)}`}
                           </p>
                         </div>
 
-                        <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-orange-500 to-red-600 rounded-full transition-all"
-                            style={{ width: `${pct}%` }} />
+                        <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #f97316, #ec4899)' }}
+                          />
                         </div>
 
                         {soldOut ? (
-                          <p className="w-full text-center py-2 text-sm font-medium text-zinc-400 bg-zinc-50 rounded-lg">
+                          <p className="w-full text-center py-2 text-sm font-medium rounded-lg" style={{ color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.04)' }}>
                             Agotado
                           </p>
                         ) : user ? (
                           <CheckoutPanel eventId={id} tierId={tier.id} availableTickets={tier.available_tickets} />
                         ) : (
-                          <Link href={`/login?next=/events/${id}`}
-                            className="block w-full py-2.5 rounded-xl border border-zinc-300 text-zinc-700 text-sm font-semibold text-center hover:bg-zinc-50 transition-colors">
+                          <Link
+                            href={`/login?next=/events/${id}`}
+                            className="block w-full py-2.5 rounded-xl text-sm font-semibold text-center transition-all hover:opacity-80"
+                            style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}
+                          >
                             Inicia sesión para comprar
                           </Link>
                         )}
@@ -229,6 +234,6 @@ export default async function EventDetailPage({
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
