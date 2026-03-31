@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useTransition, useState, useEffect, useRef, useCallback } from 'react'
+import type mapboxgl from 'mapbox-gl'
 import { Loader2, MapPin, X } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { EVENT_IMAGES_BUCKET } from '@/utils/supabase/storage'
@@ -46,8 +47,8 @@ function LocationPicker({
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null)
   const debounceRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mapRef         = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<Map | null>(null)
-  const markerRef      = useRef<Marker | null>(null)
+  const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
+  const markerRef      = useRef<mapboxgl.Marker | null>(null)
 
   // Get user location on mount for proximity bias
   useEffect(() => {
@@ -77,7 +78,7 @@ function LocationPicker({
       } catch { setSuggestions([]) }
       finally { setSearching(false) }
     }, 350)
-  }, [query, userCoords, token, selected])
+  }, [query, userCoords, selected?.name, token])
 
   // Reverse geocode when user moves pin
   const reverseGeocode = useCallback(async (lng: number, lat: number) => {
@@ -100,9 +101,9 @@ function LocationPicker({
     if (!selected || !mapRef.current || !token) return
 
     async function initMap() {
-      const mapboxgl = (await import('mapbox-gl')).default
+      const mapboxgl = (await import('mapbox-gl')).default as typeof import('mapbox-gl').default
       await import('mapbox-gl/dist/mapbox-gl.css')
-      mapboxgl.accessToken = token
+      ;mapboxgl.accessToken = token
 
       if (mapInstanceRef.current) {
         mapInstanceRef.current.flyTo({ center: [selected!.lng, selected!.lat], zoom: 15 })

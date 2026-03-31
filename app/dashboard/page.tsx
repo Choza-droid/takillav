@@ -237,9 +237,8 @@ function EventRowItem({ event, onDelete }: { event: EventRow; onDelete: (id: str
 
   if (confirmDelete) {
     return (
-      <div className="flex items-center justify-between rounded-xl px-5 py-4 gap-4"
-        style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
-        <p className="text-sm font-medium min-w-0 truncate" style={{ color: '#fca5a5' }}>
+      <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-5 py-4 gap-4">
+        <p className="text-sm font-medium text-red-800 min-w-0 truncate">
           ¿Borrar <span className="font-semibold">&quot;{event.title}&quot;</span>?
         </p>
         <div className="flex items-center gap-2 shrink-0">
