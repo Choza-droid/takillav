@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useActionState, useTransition, useState } from 'react'
 import Link from 'next/link'
@@ -28,7 +28,7 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
 
     if (imageFile && imageFile.size > 0) {
       if (!imageFile.type.startsWith('image/')) {
-        setLocalError('El archivo debe ser una imagen válida')
+        setLocalError('El archivo debe ser una imagen vÃ¡lida')
         return
       }
 
@@ -71,7 +71,7 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
       {/* Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-zinc-700 mb-1">
-          Título <span className="text-red-500">*</span>
+          TÃ­tulo <span className="text-red-500">*</span>
         </label>
         <input
           id="title"
@@ -86,7 +86,7 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
       {/* Description */}
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-zinc-700 mb-1">
-          Descripción
+          DescripciÃ³n
         </label>
         <textarea
           id="description"
@@ -141,12 +141,12 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
           <option value="">Sin venue asignado</option>
           {venues.map(v => (
             <option key={v.id} value={v.id}>
-              {v.name} — {v.city}
+              {v.name} â€” {v.city}
             </option>
           ))}
         </select>
         {venues.length === 0 && (
-          <p className="text-xs text-zinc-400 mt-1">No hay venues registrados aún (el admin los crea).</p>
+          <p className="text-xs text-zinc-400 mt-1">No hay venues registrados aÃºn (el admin los crea).</p>
         )}
       </div>
 
@@ -162,7 +162,7 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
           accept="image/*"
           className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
         />
-        <p className="mt-1 text-xs text-zinc-400">Opcional. Formatos: JPG, PNG, WEBP. Sin límite de tamaño.</p>
+        <p className="mt-1 text-xs text-zinc-400">Opcional. Formatos: JPG, PNG, WEBP. Sin lÃ­mite de tamaÃ±o.</p>
       </div>
 
       {/* Error */}
@@ -183,10 +183,10 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
         <button
           type="submit"
           disabled={isPending}
-          className={`relative overflow-hidden px-5 py-2 rounded-lg bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white text-sm font-semibold hover:from-amber-500 hover:via-orange-600 hover:to-red-700 transition-all duration-300 disabled:cursor-not-allowed ${isPending ? 'scale-[0.97]' : ''}`}
+          className={`relative overflow-hidden px-5 py-2 rounded-lg bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 text-white text-sm font-semibold hover:from-orange-600 hover:via-pink-600 hover:to-purple-800 transition-all duration-300 disabled:cursor-not-allowed ${isPending ? 'scale-[0.97]' : ''}`}
         >
           <span className={`flex items-center gap-1.5 transition-all duration-300 ${isPending ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>
-            {uploading ? 'Subiendo imagen…' : 'Crear evento'}
+            {uploading ? 'Subiendo imagenâ€¦' : 'Crear evento'}
           </span>
           <span className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isPending ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
             <Loader2 size={15} className="animate-spin" />
@@ -197,3 +197,4 @@ export default function EventForm({ venues }: { venues: Venue[] }) {
     </form>
   )
 }
+

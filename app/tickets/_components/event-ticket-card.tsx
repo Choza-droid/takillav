@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Image from 'next/image'
@@ -45,7 +45,7 @@ export default function EventTicketCard({ event, tickets }: Props) {
 
   return (
     <>
-      {/* Event card — one tap to open wallet */}
+      {/* Event card â€” one tap to open wallet */}
       <button
         onClick={() => { setIndex(0); setOpen(true) }}
         className="w-full text-left group bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:border-zinc-400 hover:shadow-md transition-all"
@@ -71,7 +71,7 @@ export default function EventTicketCard({ event, tickets }: Props) {
               />
             </>
           ) : (
-            <div className="w-full h-full bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 flex items-center justify-center">
               <Ticket size={28} className="text-white/40" />
             </div>
           )}
@@ -83,7 +83,7 @@ export default function EventTicketCard({ event, tickets }: Props) {
             </span>
             {event.validCount > 0 && (
               <span className="px-2.5 py-1 rounded-full bg-green-500/80 backdrop-blur-sm text-white text-xs font-semibold">
-                {event.validCount} válido{event.validCount !== 1 ? 's' : ''}
+                {event.validCount} vÃ¡lido{event.validCount !== 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -106,7 +106,7 @@ export default function EventTicketCard({ event, tickets }: Props) {
               </p>
             )}
           </div>
-          <p className="text-xs text-zinc-400 pt-1">Toca para ver tus boletos →</p>
+          <p className="text-xs text-zinc-400 pt-1">Toca para ver tus boletos â†’</p>
         </div>
       </button>
 
@@ -127,7 +127,7 @@ export default function EventTicketCard({ event, tickets }: Props) {
 
             {/* Header */}
             <div className="bg-black text-amber-50 px-5 py-2.5 flex items-center justify-between">
-              <span className="text-2xl tracking-[0.3em] uppercase">★ TAKILLA ★</span>
+              <span className="text-2xl tracking-[0.3em] uppercase">â˜… TAKILLA â˜…</span>
               <div className="flex items-center gap-3">
                 <span className="text-xl tracking-widest opacity-70">#{ticketDisplayNumber(ticket.id)}</span>
                 {ticket.is_used && (
@@ -150,13 +150,13 @@ export default function EventTicketCard({ event, tickets }: Props) {
               {event.venueName && (
                 <p className="text-lg text-zinc-600 flex items-center gap-1.5">
                   <MapPin size={14} />
-                  {event.venueName}{event.venueCity ? ` — ${event.venueCity}` : ''}
+                  {event.venueName}{event.venueCity ? ` â€” ${event.venueCity}` : ''}
                 </p>
               )}
               <p className="text-lg uppercase text-zinc-700">
                 {ticket.tierName}
                 {ticket.price > 0 && (
-                  <span className="ml-2 text-zinc-400">· ${ticket.price.toFixed(2)}</span>
+                  <span className="ml-2 text-zinc-400">Â· ${ticket.price.toFixed(2)}</span>
                 )}
               </p>
             </div>
@@ -168,10 +168,10 @@ export default function EventTicketCard({ event, tickets }: Props) {
               <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-zinc-800 border-4 border-black" />
             </div>
 
-            {/* QR — always visible */}
+            {/* QR â€” always visible */}
             <div className={`px-5 py-5 flex flex-col items-center gap-2 ${ticket.is_used ? 'opacity-40' : ''}`}>
               <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase self-start">
-                Código de acceso
+                CÃ³digo de acceso
               </p>
               <TicketQr qrHash={ticket.qr_hash} size={200} />
               <p className="text-base text-zinc-400 tracking-widest uppercase">
@@ -180,7 +180,7 @@ export default function EventTicketCard({ event, tickets }: Props) {
             </div>
           </div>
 
-          {/* Navigation — only when multiple tickets */}
+          {/* Navigation â€” only when multiple tickets */}
           {total > 1 && (
             <div className={`flex items-center gap-4 ${vt323.className}`}>
               <button
@@ -223,3 +223,4 @@ export default function EventTicketCard({ event, tickets }: Props) {
     </>
   )
 }
+

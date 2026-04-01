@@ -91,7 +91,7 @@ function LoginPageContent() {
           <FormButton
             className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 active:scale-[0.98]"
             style={{
-              background: 'linear-gradient(90deg, #f97316, #ec4899)',
+              background: 'var(--accent-gradient)',
               boxShadow: '0 0 30px rgba(249,115,22,0.3)',
             }}
           >
@@ -102,7 +102,7 @@ function LoginPageContent() {
 
       <p className="mt-6 text-center text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
         ¿No tienes cuenta?{' '}
-        <Link href="/signup" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#f97316' }}>
+        <Link href="/signup" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: 'var(--color-pink)' }}>
           Regístrate
         </Link>
       </p>

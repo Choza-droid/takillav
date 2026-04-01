@@ -1,17 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Bebas_Neue } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-});
-
-const bebasNeue = Bebas_Neue({
-  variable: "--font-bebas-neue",
-  subsets: ["latin"],
-  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -32,10 +26,10 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${spaceGrotesk.variable} ${bebasNeue.variable} h-full antialiased`}
-      style={{ background: '#12111a' }}
+      className={`${poppins.variable} h-full antialiased`}
+      style={{ background: '#140a2a' }}
     >
-      <body className="min-h-full flex flex-col" style={{ background: '#12111a', color: '#f5f5f5' }}>
+      <body className="min-h-full flex flex-col" style={{ background: '#140a2a', color: '#f4f1ff' }}>
         {children}
       </body>
     </html>

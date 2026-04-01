@@ -1,9 +1,9 @@
 // Home page loading — full page since Navbar is inside the page component
 export default function HomeLoading() {
   return (
-    <div className="min-h-screen bg-[#12111a] flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
       {/* Navbar skeleton */}
-      <header className="border-b border-zinc-800 h-14 bg-[#12111a]">
+      <header className="border-b border-zinc-800 h-14" style={{ background: 'var(--background)' }}>
         <div className="max-w-6xl mx-auto px-4 h-full flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-7 w-7 bg-zinc-700 animate-pulse rounded-md" />

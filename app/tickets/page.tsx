@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
@@ -81,7 +81,7 @@ export default async function TicketsPage() {
   return (
     <>
       {/* Banner */}
-      <section className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white animate-fade-in">
+      <section className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 text-white animate-fade-in">
         <div className="max-w-2xl mx-auto px-4 py-12 space-y-1">
           <p className="text-white/70 text-sm font-medium uppercase tracking-widest animate-fade-in-up" style={{ animationDelay: '60ms' }}>
             Tu billetera digital
@@ -91,7 +91,7 @@ export default async function TicketsPage() {
           </h1>
           {totalTickets > 0 && (
             <p className="text-white/80 text-base animate-fade-in-up" style={{ animationDelay: '180ms' }}>
-              {totalTickets} boleto{totalTickets !== 1 ? 's' : ''} · {eventGroups.length} evento{eventGroups.length !== 1 ? 's' : ''}
+              {totalTickets} boleto{totalTickets !== 1 ? 's' : ''} Â· {eventGroups.length} evento{eventGroups.length !== 1 ? 's' : ''}
             </p>
           )}
         </div>
@@ -103,3 +103,4 @@ export default async function TicketsPage() {
     </>
   )
 }
+

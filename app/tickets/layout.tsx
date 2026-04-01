@@ -11,7 +11,7 @@ export default async function TicketsLayout({ children }: { children: React.Reac
   if (!user) redirect('/login')
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <Navbar />
       {children}
     </div>

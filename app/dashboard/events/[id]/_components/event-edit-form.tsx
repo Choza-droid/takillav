@@ -119,7 +119,7 @@ function LocationPicker({
       })
 
       // Draggable marker
-      const marker = new mapboxgl.Marker({ color: '#f97316', draggable: true })
+      const marker = new mapboxgl.Marker({ color: '#ff6e01', draggable: true })
         .setLngLat([selected!.lng, selected!.lat])
         .addTo(map)
 
