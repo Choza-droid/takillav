@@ -70,7 +70,7 @@ function EventCard({ event, supabase, index }: {
         {catLabel && event.category !== 'otro' && (
           <span
             className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm text-white"
-            style={{ background: 'rgba(249,115,22,0.8)' }}
+            style={{ background: 'var(--accent-gradient)' }}
           >
             {catLabel}
           </span>
@@ -78,25 +78,32 @@ function EventCard({ event, supabase, index }: {
       </div>
 
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <p className="font-semibold text-white leading-snug line-clamp-2 group-hover:text-orange-400 transition-colors text-base">
+        <p className="font-semibold text-white leading-snug line-clamp-2 transition-opacity group-hover:opacity-85 text-base">
           {event.title}
         </p>
         <div className="space-y-1 text-sm flex-1" style={{ color: 'rgba(255,255,255,0.45)' }}>
           <p className="flex items-center gap-1.5">
-            <CalendarDays size={13} className="shrink-0 text-orange-400" />
+            <CalendarDays size={13} className="shrink-0" style={{ color: 'var(--color-pink)' }} />
             {new Date(event.event_date).toLocaleDateString('es-MX', {
               weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
             })}
           </p>
           {venue?.name && (
             <p className="flex items-center gap-1.5">
-              <MapPin size={13} className="shrink-0 text-orange-400" />
+              <MapPin size={13} className="shrink-0" style={{ color: 'var(--color-pink)' }} />
               {venue.name}, {venue.city}
             </p>
           )}
         </div>
         <div className="pt-3 mt-1" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <p className="text-sm font-bold" style={{ color: '#f97316' }}>
+          <p
+            className="text-sm font-bold"
+            style={{
+              background: 'var(--accent-gradient)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
             {minPrice === null ? 'Sin tiers' : minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
           </p>
         </div>
@@ -143,11 +150,11 @@ export default function EventsPage() {
   const activeCatLabel = CATEGORIES.find(c => c.value === activeCategory)?.label ?? 'Eventos'
 
   return (
-    <div style={{ background: '#12111a', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--background)', minHeight: '100vh' }}>
       {/* Banner */}
       <section
         className="text-white w-full px-4 py-16 animate-fade-in"
-        style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)' }}
+        style={{ background: 'var(--hero-gradient)' }}
       >
         <div className="max-w-6xl mx-auto space-y-2">
           <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -174,9 +181,9 @@ export default function EventsPage() {
                 onClick={() => handleCategoryChange(cat.value)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all"
                 style={isActive ? {
-                  background: 'linear-gradient(90deg, #f97316, #ec4899)',
+                  background: 'var(--accent-gradient)',
                   color: 'white',
-                  boxShadow: '0 0 20px rgba(249,115,22,0.3)',
+                  boxShadow: '0 0 20px rgba(114,13,152,0.35)',
                   border: '1px solid transparent',
                 } : {
                   background: 'rgba(255,255,255,0.04)',
@@ -226,7 +233,11 @@ export default function EventsPage() {
               <button
                 onClick={() => handleCategoryChange('all')}
                 className="mt-3 text-sm font-medium hover:opacity-70 transition-opacity"
-                style={{ color: '#f97316' }}
+                style={{
+                  background: 'var(--accent-gradient)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
               >
                 Ver todos los eventos →
               </button>

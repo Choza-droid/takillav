@@ -78,8 +78,8 @@ export default function CheckoutPanel({
         className="relative w-full py-3 rounded-xl text-sm font-bold overflow-hidden transition-all duration-300 active:scale-[0.98]"
         style={{
           background: confirmed
-            ? 'linear-gradient(90deg, #f97316, #dc2626)'
-            : 'linear-gradient(90deg, #fbbf24, #f97316, #dc2626)',
+            ? 'linear-gradient(90deg, #ff6e01, #fa1492)'
+            : 'var(--accent-gradient)',
           color: '#fff',
           opacity: confirmed ? 0.9 : 1,
         }}

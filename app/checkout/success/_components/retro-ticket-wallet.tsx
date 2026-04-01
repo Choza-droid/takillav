@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, CalendarDays, MapPin } from 'lucide-react'
@@ -42,13 +42,13 @@ export default function RetroTicketWallet({
       {/* Ticket */}
       <div className={`w-full max-w-sm border-4 border-black bg-amber-50 shadow-[8px_8px_0_0_#000] ${vt323.className}`}>
 
-        {/* Header — brand gradient */}
-        <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white px-5 py-2.5 flex items-center justify-between">
+        {/* Header â€” brand gradient */}
+        <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 text-white px-5 py-2.5 flex items-center justify-between">
           <span
             className="text-2xl tracking-[0.3em] uppercase"
             style={{ textShadow: '1px 1px 0 #c2410c, 2px 2px 0 #9a3412, 3px 3px 6px rgba(0,0,0,0.35)' }}
           >
-            ★ TAKILLA ★
+            â˜… TAKILLA â˜…
           </span>
           <span className="text-xl tracking-widest opacity-80">#{ticket.displayNumber}</span>
         </div>
@@ -67,14 +67,14 @@ export default function RetroTicketWallet({
           {(ticket.venueName || ticket.venueCity) && (
             <p className="text-lg text-zinc-600 flex items-center gap-1.5">
               <MapPin size={14} />
-              {[ticket.venueName, ticket.venueCity].filter(Boolean).join(' — ')}
+              {[ticket.venueName, ticket.venueCity].filter(Boolean).join(' â€” ')}
             </p>
           )}
           {ticket.tierName && (
             <p className="text-lg uppercase text-zinc-700">
               {ticket.tierName}
               {ticket.tierPrice !== null && ticket.tierPrice > 0 && (
-                <span className="ml-2 text-zinc-400">· ${ticket.tierPrice.toFixed(2)}</span>
+                <span className="ml-2 text-zinc-400">Â· ${ticket.tierPrice.toFixed(2)}</span>
               )}
             </p>
           )}
@@ -82,15 +82,15 @@ export default function RetroTicketWallet({
 
         {/* Dashed separator */}
         <div className="relative flex items-center my-2">
-          <div className="absolute -left-[18px] w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-4 border-black" />
+          <div className="absolute -left-[18px] w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-purple-700 border-4 border-black" />
           <div className="flex-1 border-t-[3px] border-dashed border-orange-400 mx-5" />
-          <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-4 border-black" />
+          <div className="absolute -right-[18px] w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-purple-700 border-4 border-black" />
         </div>
 
         {/* QR */}
         <div className="px-5 py-5 flex flex-col items-center gap-3">
           <p className="text-xs tracking-[0.3em] text-zinc-400 uppercase self-start">
-            Código de acceso
+            CÃ³digo de acceso
           </p>
           <TicketQr qrHash={ticket.qr_hash} size={200} />
           <p className="text-base text-orange-400 tracking-widest uppercase">

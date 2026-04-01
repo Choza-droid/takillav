@@ -15,13 +15,13 @@ import RetroTicketWallet from '@/app/checkout/success/_components/retro-ticket-w
 const vt323 = VT323({ weight: '400', subsets: ['latin'] })
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
-const BG         = '#12111a'
+const BG         = 'var(--background)'
 const CARD       = 'rgba(255,255,255,0.04)'
 const BORDER     = '1px solid rgba(255,255,255,0.08)'
 const TEXT       = '#ffffff'
 const TEXT_MUTED = 'rgba(255,255,255,0.45)'
 const TEXT_DIM   = 'rgba(255,255,255,0.25)'
-const ACCENT     = 'linear-gradient(90deg, #f97316, #ec4899)'
+const ACCENT     = 'var(--accent-gradient)'
 const SIDEBAR_BG = 'rgba(255,255,255,0.03)'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -213,7 +213,7 @@ function TicketsSection({ tickets }: { tickets: TicketRow[] }) {
                       <span className="text-sm font-medium" style={{ color: TEXT_MUTED }}>{tier?.name}</span>
                       <span className="text-sm font-bold" style={{ color: TEXT }}>${Number(tier?.price ?? 0).toFixed(2)}</span>
                     </div>
-                    <p className="text-xs font-medium" style={{ color: '#f97316' }}>Toca para ver QR →</p>
+                    <p className="text-xs font-medium" style={{ color: 'var(--color-orange)' }}>Toca para ver QR →</p>
                   </button>
                 )
               })}
@@ -747,7 +747,7 @@ export default function DashboardPage() {
     <div className="min-h-screen" style={{ background: BG }}>
 
       {/* Header */}
-      <header className="h-14 flex items-center sticky top-0 z-30" style={{ borderBottom: BORDER, background: 'rgba(18,17,26,0.85)', backdropFilter: 'blur(12px)' }}>
+      <header className="h-14 flex items-center sticky top-0 z-30" style={{ borderBottom: BORDER, background: 'rgba(20,10,42,0.85)', backdropFilter: 'blur(12px)' }}>
         <div className="max-w-6xl mx-auto px-4 w-full flex items-center justify-between">
           <button className="md:hidden p-1 transition-colors" onClick={() => setDrawerOpen(true)}
             style={{ color: TEXT_MUTED }}>

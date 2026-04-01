@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   if (!user) redirect('/login')
 
   return (
-    <div style={{ minHeight: '100vh', background: '#12111a' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
       {children}
     </div>
   )

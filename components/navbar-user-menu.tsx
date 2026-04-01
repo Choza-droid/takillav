@@ -43,7 +43,7 @@ export default function NavbarUserMenu({ userName, roleLabel, menuItems }: Props
         onClick={() => setOpen(v => !v)}
         className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90"
         style={{
-          background: 'linear-gradient(90deg, #f97316, #ec4899)',
+          background: 'var(--accent-gradient)',
           boxShadow: '0 0 20px rgba(249,115,22,0.25)',
           maxWidth: '180px',
         }}
@@ -63,7 +63,7 @@ export default function NavbarUserMenu({ userName, roleLabel, menuItems }: Props
         >
           <div className="px-4 py-3 mb-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
             <p className="text-sm font-semibold text-white truncate">{userName}</p>
-            <p className="text-xs mt-0.5" style={{ color: '#f97316' }}>{roleLabel}</p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--color-orange)' }}>{roleLabel}</p>
           </div>
 
           {menuItems.map(item => (

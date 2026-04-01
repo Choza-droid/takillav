@@ -29,14 +29,14 @@ export default async function Home() {
   ])
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#12111a' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       <Navbar />
 
       {/* Hero */}
       <section
         className="text-white animate-fade-in"
-        style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)' }}
+        style={{ background: 'var(--hero-gradient)' }}
       >
         <div className="max-w-6xl mx-auto px-4 py-24 text-center space-y-6">
           <p
@@ -61,7 +61,7 @@ export default async function Home() {
             <Link
               href="/events"
               className="px-6 py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(90deg, #f97316, #ec4899)' }}
+              style={{ background: 'var(--accent-gradient)' }}
             >
               Ver eventos
             </Link>
@@ -83,7 +83,7 @@ export default async function Home() {
         <div className="flex items-center gap-3 mb-7">
           <span
             className="text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full text-white"
-            style={{ background: 'linear-gradient(90deg, #f97316, #ec4899)' }}
+            style={{ background: 'var(--accent-gradient)' }}
           >
             Categoría
           </span>
@@ -130,7 +130,7 @@ export default async function Home() {
             <Link
               href="/events"
               className="text-sm font-medium transition-colors hover:opacity-70"
-              style={{ color: '#f97316' }}
+              style={{ color: 'var(--color-orange)' }}
             >
               Ver todos →
             </Link>
@@ -193,7 +193,7 @@ export default async function Home() {
                       )}
                     </div>
                     <div className="pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                      <p className="text-sm font-semibold" style={{ color: '#f97316' }}>
+                      <p className="text-sm font-semibold" style={{ color: 'var(--color-orange)' }}>
                         {minPrice === null ? 'Sin tiers' : minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
                       </p>
                     </div>
@@ -231,7 +231,7 @@ export default async function Home() {
               >
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
-                  style={{ background: 'linear-gradient(135deg, #f97316, #ec4899)' }}
+                  style={{ background: 'var(--accent-gradient)' }}
                 >
                   {f.icon}
                 </div>
@@ -254,7 +254,7 @@ export default async function Home() {
           <span
             className="font-semibold"
             style={{
-              background: 'linear-gradient(90deg, #f97316, #ec4899)',
+              background: 'var(--accent-gradient)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}

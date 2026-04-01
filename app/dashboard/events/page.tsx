@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
@@ -63,7 +63,7 @@ export default async function EventsPage() {
         </div>
         <Link
           href="/dashboard/events/new"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white text-sm font-semibold hover:from-amber-500 hover:via-orange-600 hover:to-red-700 transition-all"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 text-white text-sm font-semibold hover:from-orange-600 hover:via-pink-600 hover:to-purple-800 transition-all"
         >
           <Plus size={16} />
           Nuevo evento
@@ -73,11 +73,11 @@ export default async function EventsPage() {
       {!events?.length ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-16 text-center">
           <CalendarDays size={40} className="mx-auto text-zinc-300 mb-3" />
-          <p className="font-semibold text-zinc-700">No tienes eventos aún</p>
+          <p className="font-semibold text-zinc-700">No tienes eventos aÃºn</p>
           <p className="text-sm text-zinc-400 mt-1">Crea tu primer evento para empezar a vender boletos</p>
           <Link
             href="/dashboard/events/new"
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white text-sm font-semibold hover:from-amber-500 hover:via-orange-600 hover:to-red-700 transition-all"
+            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 text-white text-sm font-semibold hover:from-orange-600 hover:via-pink-600 hover:to-purple-800 transition-all"
           >
             <Plus size={15} />
             Crear evento

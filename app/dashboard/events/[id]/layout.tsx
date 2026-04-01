@@ -17,10 +17,10 @@ export default async function EventDetailLayout({
   if (!user) redirect('/login')
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
-      <header className="bg-white border-b border-zinc-200">
+      <header className="border-b" style={{ background: 'rgba(20,10,42,0.9)', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
 
           {/* Logo */}
@@ -32,7 +32,10 @@ export default async function EventDetailLayout({
               height={28}
               className="rounded-md"
             />
-            <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 bg-clip-text text-transparent font-bold text-lg tracking-tight">
+            <span
+              className="font-bold text-lg tracking-tight"
+              style={{ background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
               Takilla
             </span>
           </Link>
@@ -40,7 +43,8 @@ export default async function EventDetailLayout({
           {/* Back button */}
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 text-sm font-medium text-zinc-600 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-all"
+            style={{ background: 'var(--accent-gradient)' }}
           >
             <ArrowLeft size={14} />
             Mis eventos

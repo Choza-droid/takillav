@@ -87,9 +87,9 @@ export default async function EventDetailPage({
     ?? (venue?.name ? `${venue.name}${venue.city ? `, ${venue.city}` : ''}` : null)
 
   return (
-    <div style={{ background: '#12111a', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--background)', minHeight: '100vh' }}>
       {/* Full-width banner */}
-      <div className="relative w-full h-64 md:h-[420px] overflow-hidden animate-fade-in" style={{ background: '#1a1a2e' }}>
+      <div className="relative w-full h-64 md:h-[420px] overflow-hidden animate-fade-in" style={{ background: 'var(--color-deep-purple)' }}>
         {imageUrl ? (
           <>
             <Image src={imageUrl} alt="" fill unoptimized aria-hidden
@@ -98,7 +98,7 @@ export default async function EventDetailPage({
               sizes="100vw" className="object-contain" />
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e, #0f3460)' }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--hero-gradient)' }}>
             <Ticket size={48} style={{ color: 'rgba(255,255,255,0.15)' }} />
           </div>
         )}
@@ -188,7 +188,7 @@ export default async function EventDetailPage({
           <div className="md:sticky md:top-6 space-y-3">
             <div
               className="rounded-2xl p-5 space-y-4"
-              style={{ background: '#1e1d2a', border: '1px solid rgba(255,255,255,0.08)' }}
+              style={{ background: 'var(--surface-panel)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Boletos</p>

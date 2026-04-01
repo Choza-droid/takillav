@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useActionState } from 'react'
 import Link from 'next/link'
@@ -24,13 +24,13 @@ export default function SignupPage() {
             required
             autoComplete="name"
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
-            placeholder="Juan Pérez"
+            placeholder="Juan PÃ©rez"
           />
         </div>
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1">
-            Correo electrónico
+            Correo electrÃ³nico
           </label>
           <input
             id="email"
@@ -45,7 +45,7 @@ export default function SignupPage() {
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-zinc-700 mb-1">
-            Contraseña
+            ContraseÃ±a
           </label>
           <input
             id="password"
@@ -55,7 +55,7 @@ export default function SignupPage() {
             autoComplete="new-password"
             minLength={6}
             className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="MÃ­nimo 6 caracteres"
           />
         </div>
 
@@ -66,16 +66,16 @@ export default function SignupPage() {
         )}
 
         <div className="flex justify-center pt-2">
-          <FormButton className="rounded-lg bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 px-8 py-2 text-sm font-semibold text-white hover:from-amber-500 hover:via-orange-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+          <FormButton className="rounded-lg bg-gradient-to-r from-orange-500 via-pink-500 to-purple-700 px-8 py-2 text-sm font-semibold text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
             Crear cuenta
           </FormButton>
         </div>
       </form>
 
       <p className="mt-6 text-center text-sm text-zinc-500">
-        ¿Ya tienes cuenta?{' '}
+        Â¿Ya tienes cuenta?{' '}
         <Link href="/login" className="font-medium text-orange-600 hover:text-orange-700 hover:underline">
-          Inicia sesión
+          Inicia sesiÃ³n
         </Link>
       </p>
     </div>
