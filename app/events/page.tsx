@@ -157,9 +157,6 @@ export default function EventsPage() {
         style={{ background: 'var(--hero-gradient)' }}
       >
         <div className="max-w-6xl mx-auto space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            Plataforma de boletos regional
-          </p>
           <h1 className="font-display text-5xl leading-tight">
             {activeCategory === 'all' ? 'Todos los eventos' : activeCatLabel}
           </h1>
@@ -179,9 +176,10 @@ export default function EventsPage() {
               <button
                 key={cat.value}
                 onClick={() => handleCategoryChange(cat.value)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold outline-none"
                 style={isActive ? {
                   background: 'var(--accent-gradient)',
+                  backgroundClip: 'padding-box',
                   color: 'white',
                   boxShadow: '0 0 20px rgba(114,13,152,0.35)',
                   border: '1px solid transparent',
@@ -189,6 +187,7 @@ export default function EventsPage() {
                   background: 'rgba(255,255,255,0.04)',
                   color: 'rgba(255,255,255,0.6)',
                   border: '1px solid rgba(255,255,255,0.1)',
+                  transition: 'background 150ms, color 150ms',
                 }}
               >
                 {cat.img && (
