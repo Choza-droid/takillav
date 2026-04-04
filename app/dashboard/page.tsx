@@ -522,6 +522,7 @@ function SettingsSection({ profile, email, onProfileUpdate, onLogout }: {
   const [emailSaved, setEmailSaved] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [savingEmail, startEmailSave] = useTransition()
+  const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
   const [pwSaved, setPwSaved] = useState(false)
@@ -556,13 +557,16 @@ function SettingsSection({ profile, email, onProfileUpdate, onLogout }: {
   }
   async function handleSavePassword() {
     setPwError(''); setPwSaved(false)
+    if (!currentPw) { setPwError('Ingresa tu contraseña actual.'); return }
     if (!newPw) { setPwError('Ingresa la nueva contraseña.'); return }
     if (newPw.length < 6) { setPwError('Mínimo 6 caracteres.'); return }
     if (newPw !== confirmPw) { setPwError('Las contraseñas no coinciden.'); return }
     startPwSave(async () => {
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: currentPw })
+      if (signInError) { setPwError('La contraseña actual es incorrecta.'); return }
       const { error } = await supabase.auth.updateUser({ password: newPw })
       if (error) { setPwError('No se pudo actualizar. Intenta de nuevo.'); return }
-      setPwSaved(true); setNewPw(''); setConfirmPw(''); setTimeout(() => setPwSaved(false), 2500)
+      setPwSaved(true); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setTimeout(() => setPwSaved(false), 2500)
     })
   }
 
@@ -598,7 +602,8 @@ function SettingsSection({ profile, email, onProfileUpdate, onLogout }: {
         <Card>
           <h2 className="text-sm font-semibold" style={{ color: TEXT }}>Contraseña</h2>
           <div className="space-y-2">
-            <input type="password" placeholder="Nueva contraseña" value={newPw} onChange={e => setNewPw(e.target.value)} className={inputClass} style={{ ...inputStyle, '--tw-placeholder-color': 'rgba(255,255,255,0.3)' } as React.CSSProperties} />
+            <input type="password" placeholder="Contraseña actual" value={currentPw} onChange={e => setCurrentPw(e.target.value)} className={inputClass} style={inputStyle} />
+            <input type="password" placeholder="Nueva contraseña" value={newPw} onChange={e => setNewPw(e.target.value)} className={inputClass} style={inputStyle} />
             <input type="password" placeholder="Confirmar nueva contraseña" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} className={inputClass} style={inputStyle} />
           </div>
           {pwError && <p className="text-xs" style={{ color: '#fca5a5' }}>{pwError}</p>}
@@ -781,6 +786,14 @@ export default function DashboardPage() {
         <div className="p-4">
           <SidebarContent profile={profile} section={section} onSelect={handleSelectSection} isTeamMember={isTeamMember} />
         </div>
+      </div>
+
+      {/* Mobile "Inicio" hint */}
+      <div className="md:hidden flex flex-col items-center pt-2 pb-1">
+        <span style={{ color: TEXT_MUTED, fontSize: '1rem', lineHeight: 1 }}>↑</span>
+        <p className="text-xs mt-0.5 font-semibold" style={{
+          background: ACCENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        }}>Toca aquí para volver al inicio</p>
       </div>
 
       {/* Body */}
