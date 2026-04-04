@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/server'
 import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import { Ticket, CalendarDays, MapPin, QrCode, ShieldCheck, Zap } from 'lucide-react'
 import Navbar from '@/components/navbar'
+import DomeGallery from '@/components/dome-gallery'
 
 type VenueInfo = {
   name?: string | null
@@ -35,16 +36,24 @@ export default async function Home() {
 
       {/* Hero */}
       <section
-        className="text-white animate-fade-in"
+        className="relative text-white animate-fade-in overflow-hidden"
         style={{ background: 'var(--hero-gradient)' }}
       >
-        <div className="max-w-6xl mx-auto px-4 py-24 text-center space-y-6">
-          <p
-            className="text-sm font-medium uppercase tracking-widest animate-fade-in-up"
-            style={{ color: 'rgba(255,255,255,0.45)', animationDelay: '80ms' }}
-          >
-            Plataforma de boletos regional
-          </p>
+        {/* Dome gallery background */}
+        <div className="absolute inset-0 z-0" style={{ opacity: 0.45 }}>
+          <DomeGallery
+            fit={1.2}
+            minRadius={750}
+            segments={30}
+            maxVerticalRotationDeg={0}
+            dragDampening={2}
+            grayscale={false}
+            overlayBlurColor="#140a2a"
+            autoRotateSpeed={0.4}
+          />
+        </div>
+        <div className="max-w-6xl mx-auto px-4 py-24 text-center space-y-6 relative z-10">
+          
           <h1
             className="font-display text-6xl md:text-7xl leading-none max-w-3xl mx-auto animate-fade-in-up"
             style={{ animationDelay: '160ms' }}
@@ -55,7 +64,7 @@ export default async function Home() {
             className="text-lg max-w-xl mx-auto animate-fade-in-up"
             style={{ color: 'rgba(255,255,255,0.55)', animationDelay: '240ms' }}
           >
-            Adquiere boletos para conciertos, festivales y eventos locales. Validación instantánea con QR.
+            Adquiere boletos para conciertos, festivales y eventos locales.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2 animate-fade-in-up" style={{ animationDelay: '320ms' }}>
             <Link
