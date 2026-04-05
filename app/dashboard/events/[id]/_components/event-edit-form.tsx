@@ -14,7 +14,7 @@ export const CATEGORIES = [
   { value: 'otro',        label: 'Otro'          },
 ]
 
-// ─── Mapbox location picker with mini map ─────────────────────────────────────
+// ─── Mapbox location picker ────────────────────────────────────────────────────
 
 interface MapboxFeature {
   id: string
@@ -47,16 +47,14 @@ function LocationPicker({
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
   const markerRef      = useRef<mapboxgl.Marker | null>(null)
 
-  // Get user location on mount for proximity bias
   useEffect(() => {
     if (!navigator.geolocation) return
     navigator.geolocation.getCurrentPosition(
       pos => setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {} // silently ignore if denied
+      () => {}
     )
   }, [])
 
-  // Search suggestions
   useEffect(() => {
     if (!query.trim() || query === selected?.name) { setSuggestions([]); return }
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -64,9 +62,7 @@ function LocationPicker({
       if (!token) return
       setSearching(true)
       try {
-        const proximity = userCoords
-          ? `&proximity=${userCoords.lng},${userCoords.lat}`
-          : ''
+        const proximity = userCoords ? `&proximity=${userCoords.lng},${userCoords.lat}` : ''
         const res = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&language=es&limit=5&country=mx,us${proximity}`
         )
@@ -77,7 +73,6 @@ function LocationPicker({
     }, 350)
   }, [query, userCoords, selected?.name, token])
 
-  // Reverse geocode when user moves pin
   const reverseGeocode = useCallback(async (lng: number, lat: number) => {
     if (!token) return
     try {
@@ -93,10 +88,8 @@ function LocationPicker({
     }
   }, [token])
 
-  // Init map when selected changes
   useEffect(() => {
     if (!selected || !mapRef.current || !token) return
-
     async function initMap() {
       const mapboxgl = (await import('mapbox-gl')).default as typeof import('mapbox-gl').default
       await import('mapbox-gl/dist/mapbox-gl.css')
@@ -116,18 +109,15 @@ function LocationPicker({
         interactive: true,
       })
 
-      // Draggable marker
-      const marker = new mapboxgl.Marker({ color: '#ff6e01', draggable: true })
+      const marker = new mapboxgl.Marker({ color: '#f97316', draggable: true })
         .setLngLat([selected!.lng, selected!.lat])
         .addTo(map)
 
-      // Update on drag end
       marker.on('dragend', () => {
         const { lng, lat } = marker.getLngLat()
         reverseGeocode(lng, lat)
       })
 
-      // Click on map to move marker
       map.on('click', (e) => {
         const { lng, lat } = e.lngLat
         marker.setLngLat([lng, lat])
@@ -137,11 +127,9 @@ function LocationPicker({
       mapInstanceRef.current = map
       markerRef.current = marker
     }
-
     initMap()
   }, [selected, token, reverseGeocode])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => { mapInstanceRef.current?.remove() }
   }, [])
@@ -158,32 +146,29 @@ function LocationPicker({
   }
 
   function handleSelect(feature: MapboxFeature) {
-    const [lng, lat] = feature.center
-    // Destroy old map so useEffect reinitializes it at new coords
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove()
       mapInstanceRef.current = null
       markerRef.current = null
     }
+    const [lng, lat] = feature.center
     setSelected({ name: feature.place_name, lat, lng })
     setQuery(feature.place_name)
     setSuggestions([])
   }
 
-  const inputClass = "w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+  const inputClass = "w-full rounded-lg border border-purple-700/40 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-purple-400/50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-zinc-700">Ubicación</label>
+      <label className="block text-sm font-medium text-purple-300">Ubicación</label>
 
-      {/* Hidden fields */}
       <input type="hidden" name="location_name" value={selected?.name ?? ''} />
       <input type="hidden" name="location_lat"  value={selected?.lat  ?? ''} />
       <input type="hidden" name="location_lng"  value={selected?.lng  ?? ''} />
 
-      {/* Search input */}
       <div className="relative">
-        <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
+        <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400/50 pointer-events-none" />
         <input
           type="text"
           value={query}
@@ -194,23 +179,22 @@ function LocationPicker({
         />
         {(query || selected) && (
           <button type="button" onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700">
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400/50 hover:text-white transition-colors">
             <X size={13} />
           </button>
         )}
       </div>
 
-      {/* Suggestions */}
       {suggestions.length > 0 && (
-        <div className="border border-zinc-200 rounded-xl overflow-hidden bg-white shadow-md z-10 relative">
+        <div className="border border-purple-700/40 rounded-xl overflow-hidden bg-[#1a1035] shadow-lg z-10 relative">
           {suggestions.map(feature => (
             <button
               key={feature.id}
               type="button"
               onClick={() => handleSelect(feature)}
-              className="w-full text-left px-4 py-2.5 text-sm text-zinc-700 hover:bg-orange-50 hover:text-orange-700 flex items-center gap-2 border-b border-zinc-100 last:border-0 transition-colors"
+              className="w-full text-left px-4 py-2.5 text-sm text-purple-200 hover:bg-orange-500/10 hover:text-orange-300 flex items-center gap-2 border-b border-purple-700/30 last:border-0 transition-colors"
             >
-              <MapPin size={13} className="shrink-0 text-zinc-400" />
+              <MapPin size={13} className="shrink-0 text-purple-400/50" />
               <span className="truncate">{feature.place_name}</span>
             </button>
           ))}
@@ -218,27 +202,26 @@ function LocationPicker({
       )}
 
       {searching && (
-        <p className="text-xs text-zinc-400 flex items-center gap-1.5">
+        <p className="text-xs text-purple-400/60 flex items-center gap-1.5">
           <Loader2 size={11} className="animate-spin" /> Buscando...
         </p>
       )}
 
-      {/* Mini map */}
       {selected && (
-        <div className="rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
+        <div className="rounded-xl overflow-hidden border border-purple-700/40">
           <div ref={mapRef} className="w-full h-48" />
-          <div className="px-3 py-2 bg-white border-t border-zinc-100 space-y-0.5">
+          <div className="px-3 py-2 bg-white/5 border-t border-purple-700/30 space-y-0.5">
             <div className="flex items-center gap-2">
-              <MapPin size={12} className="text-orange-500 shrink-0" />
-              <p className="text-xs text-zinc-700 truncate font-medium">{selected.name}</p>
+              <MapPin size={12} className="text-orange-400 shrink-0" />
+              <p className="text-xs text-white truncate font-medium">{selected.name}</p>
             </div>
-            <p className="text-xs text-zinc-400 pl-5">Arrastra el pin o haz clic en el mapa para ajustar la ubicación</p>
+            <p className="text-xs text-purple-400/50 pl-5">Arrastra el pin o haz clic en el mapa para ajustar</p>
           </div>
         </div>
       )}
 
       {!token && (
-        <p className="text-xs text-red-500">Falta NEXT_PUBLIC_MAPBOX_TOKEN en .env.local</p>
+        <p className="text-xs text-red-400">Falta NEXT_PUBLIC_MAPBOX_TOKEN en .env.local</p>
       )}
     </div>
   )
@@ -284,6 +267,9 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
     const imageFile = formData.get('image_file') as File | null
     formData.delete('image_file')
 
+    // Status is always draft — managed by StatusActions
+    formData.set('status', 'draft')
+
     if (imageFile && imageFile.size > 0) {
       if (!imageFile.type.startsWith('image/')) { setLocalError('El archivo debe ser una imagen válida'); return }
       setUploading(true)
@@ -307,14 +293,14 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
     startTransition(() => formAction(formData))
   }
 
-  const inputClass = "w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+  const inputClass = "w-full rounded-lg border border-purple-700/40 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-purple-400/50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-zinc-200 p-6 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-white/5 rounded-2xl border border-purple-700/40 p-6 space-y-5">
 
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-zinc-700 mb-1">
-          Título <span className="text-red-500">*</span>
+        <label htmlFor="title" className="block text-sm font-medium text-purple-300 mb-1">
+          Título <span className="text-orange-400">*</span>
         </label>
         <input id="title" name="title" type="text" required
           defaultValue={defaultValues?.title ?? ''} placeholder="Concierto de Rock en el Parque"
@@ -322,32 +308,24 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-zinc-700 mb-1">Descripción</label>
+        <label htmlFor="description" className="block text-sm font-medium text-purple-300 mb-1">Descripción</label>
         <textarea id="description" name="description" rows={3}
           defaultValue={defaultValues?.description ?? ''} placeholder="Describe el evento..."
           className={`${inputClass} resize-none`} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="event_date" className="block text-sm font-medium text-zinc-700 mb-1">
-            Fecha y hora <span className="text-red-500">*</span>
-          </label>
-          <input id="event_date" name="event_date" type="datetime-local" required
-            defaultValue={defaultDate} className={inputClass} />
-        </div>
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-zinc-700 mb-1">Estado</label>
-          <select id="status" name="status" defaultValue={defaultValues?.status ?? 'draft'} className={inputClass}>
-            <option value="draft">Borrador</option>
-            <option value="published">Publicado</option>
-          </select>
-        </div>
+      <div>
+        <label htmlFor="event_date" className="block text-sm font-medium text-purple-300 mb-1">
+          Fecha y hora <span className="text-orange-400">*</span>
+        </label>
+        <input id="event_date" name="event_date" type="datetime-local" required
+          defaultValue={defaultDate} className={inputClass} />
       </div>
 
       <div>
-        <label htmlFor="category" className="block text-sm font-medium text-zinc-700 mb-1">Categoría</label>
-        <select id="category" name="category" defaultValue={defaultValues?.category ?? 'otro'} className={inputClass}>
+        <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">Categoría</label>
+        <select id="category" name="category" defaultValue={defaultValues?.category ?? 'otro'}
+          className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}>
           {CATEGORIES.map(cat => (
             <option key={cat.value} value={cat.value}>{cat.label}</option>
           ))}
@@ -361,27 +339,30 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
       />
 
       <div>
-        <label htmlFor="image_file" className="block text-sm font-medium text-zinc-700 mb-1">Imagen del evento</label>
+        <label htmlFor="image_file" className="block text-sm font-medium text-purple-300 mb-1">Imagen del evento</label>
         {defaultValues?.image_url && (
-          <p className="text-xs text-zinc-400 mb-2">Ya tienes una imagen. Sube una nueva para reemplazarla.</p>
+          <p className="text-xs text-purple-400/50 mb-2">Ya tienes una imagen. Sube una nueva para reemplazarla.</p>
         )}
-        <input id="image_file" name="image_file" type="file" accept="image/*" className={inputClass} />
-        <p className="mt-1 text-xs text-zinc-400">Opcional. Formatos: JPG, PNG, WEBP.</p>
+        <input id="image_file" name="image_file" type="file" accept="image/*"
+          className="w-full rounded-lg border border-purple-700/40 bg-white/5 px-3 py-2 text-sm text-purple-300 file:mr-3 file:rounded-md file:border-0 file:bg-orange-500/20 file:px-3 file:py-1 file:text-xs file:font-medium file:text-orange-300 hover:file:bg-orange-500/30 transition-all cursor-pointer" />
+        <p className="mt-1 text-xs text-purple-400/50">Opcional. Formatos: JPG, PNG, WEBP.</p>
       </div>
 
       {(localError || state?.error) && (
-        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{localError ?? state?.error}</p>
+        <p className="text-sm text-red-400 bg-red-900/20 border border-red-700/40 rounded-lg px-3 py-2">
+          {localError ?? state?.error}
+        </p>
       )}
 
       <div className="flex items-center justify-end gap-3 pt-2">
         {onCancel && (
           <button type="button" onClick={onCancel}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
+            className="px-4 py-2 rounded-lg text-sm font-medium text-purple-400 hover:text-white border border-purple-700/40 hover:bg-white/5 transition-colors">
             Cancelar
           </button>
         )}
         <button type="submit" disabled={isPending}
-          className={`relative overflow-hidden px-5 py-2 rounded-lg bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 text-white text-sm font-semibold hover:from-amber-500 hover:via-orange-600 hover:to-red-700 transition-all duration-300 disabled:cursor-not-allowed ${isPending ? 'scale-[0.97]' : ''}`}>
+          className={`relative overflow-hidden px-5 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-purple-600 text-white text-sm font-semibold hover:from-orange-600 hover:to-purple-700 transition-all duration-300 disabled:cursor-not-allowed ${isPending ? 'scale-[0.97]' : ''}`}>
           <span className={`flex items-center gap-1.5 transition-all duration-300 ${isPending ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>
             {uploading ? 'Subiendo imagen…' : submitLabel}
           </span>
