@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useTransition, useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import Image from 'next/image'
 import type mapboxgl from 'mapbox-gl'
 import { Loader2, MapPin, X, CalendarDays, Eye } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
@@ -244,10 +245,18 @@ function ImagePreview({ previewUrl, title, eventDate }: {
         <div className="space-y-1.5">
           <p className="text-xs text-purple-400/60">Página del evento</p>
           <div className="relative w-full h-40 rounded-xl overflow-hidden bg-zinc-900">
-            <img src={previewUrl} alt="" aria-hidden
-              className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-50" />
-            <img src={previewUrl} alt={title}
-              className="absolute inset-0 w-full h-full object-contain" />
+            {previewUrl && (
+              <>
+                <Image src={previewUrl} alt="" aria-hidden
+                  fill
+                  className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-50"
+                  sizes="(max-width: 768px) 100vw, 50vw" />
+                <Image src={previewUrl} alt={title}
+                  fill
+                  className="absolute inset-0 w-full h-full object-contain"
+                  sizes="(max-width: 768px) 100vw, 50vw" />
+              </>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-3">
               <p className="text-white font-bold text-sm leading-tight line-clamp-1 drop-shadow">
@@ -268,7 +277,12 @@ function ImagePreview({ previewUrl, title, eventDate }: {
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             <div className="relative h-28 overflow-hidden">
-              <img src={previewUrl} alt={title} className="w-full h-full object-cover" />
+              {previewUrl && (
+                <Image src={previewUrl} alt={title}
+                  fill
+                  className="w-full h-full object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw" />
+              )}
             </div>
             <div className="p-3 space-y-1">
               <p className="font-semibold text-white text-sm leading-snug line-clamp-1">
@@ -309,7 +323,7 @@ type Props = {
   onCancel?: () => void
 }
 
-export default function EventForm({ action, defaultValues, submitLabel = 'Guardar', onCancel }: Props) {
+export default function EventForm({ action, defaultValues }: Props) {
   const [state, formAction]                = useActionState(action, null)
   const [isActionPending, startTransition] = useTransition()
   const [uploading, setUploading]          = useState(false)

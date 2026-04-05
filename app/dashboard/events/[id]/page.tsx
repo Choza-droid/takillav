@@ -1,9 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
-import { resolveEventImageUrl } from '@/utils/supabase/storage'
 import {
   CalendarDays, MapPin, Ticket, Globe, ArrowLeft,
   TrendingUp, Users, DollarSign, Pencil, Lock
@@ -41,7 +39,6 @@ export default async function EventDetailPage({
   if (!isOwner && !isAdmin) redirect('/dashboard')
 
   const venue = (event.venues ?? null) as VenueInfo | null
-  const imageUrl = resolveEventImageUrl(supabase, event.image_url)
   const isFinished = event.status === 'published' && new Date(event.event_date) < new Date()
   const isDraft = event.status === 'draft'
   const isPublished = event.status === 'published' && !isFinished

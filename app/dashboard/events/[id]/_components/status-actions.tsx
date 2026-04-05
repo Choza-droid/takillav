@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateEventStatus } from '../actions'
 import { Globe, FileText, XCircle, AlertTriangle, Save, Loader2 } from 'lucide-react'
