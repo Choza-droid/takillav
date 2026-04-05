@@ -11,8 +11,6 @@ export const CATEGORIES = [
   { value: 'arte',        label: 'Arte'          },
   { value: 'social',      label: 'Evento social' },
   { value: 'nocturna',    label: 'Vida nocturna' },
-  { value: 'deporte',     label: 'Deporte'       },
-  { value: 'gastronomia', label: 'Gastronomía'   },
   { value: 'otro',        label: 'Otro'          },
 ]
 
