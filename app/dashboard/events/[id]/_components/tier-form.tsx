@@ -64,7 +64,7 @@ export default function TierForm({ eventId }: { eventId: string }) {
         <p className="text-sm text-red-400 mt-2">{state.error}</p>
       )}
 
-      <FormButton className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-purple-600 text-white text-sm font-medium hover:from-orange-600 hover:to-purple-700 transition-all">
+      <FormButton className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium transition-all" style={{background: 'var(--accent-gradient)'}}>
         <Plus size={14} />
         Agregar tier
       </FormButton>

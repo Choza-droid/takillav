@@ -40,8 +40,8 @@ export default function TierList({ tiers, eventId }: { tiers: Tier[]; eventId: s
                 </div>
                 <div className="h-1.5 bg-purple-900/60 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-orange-500 to-purple-600 rounded-full transition-all"
-                    style={{ width: `${pct}%` }}
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${pct}%`, background: 'var(--accent-gradient)' }}
                   />
                 </div>
               </div>

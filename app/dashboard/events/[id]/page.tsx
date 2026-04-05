@@ -193,8 +193,8 @@ export default async function EventDetailPage({
               <p className="text-2xl font-bold text-white">{soldPct}%</p>
               <div className="mt-1 h-1.5 bg-purple-900/60 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-orange-500 to-purple-600 rounded-full transition-all"
-                  style={{ width: `${soldPct}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${soldPct}%`, background: 'var(--accent-gradient)' }}
                 />
               </div>
             </div>
@@ -207,9 +207,6 @@ export default async function EventDetailPage({
           </div>
         </section>
       )}
-
-      {/* Status actions */}
-      {!isFinished && <StatusActions eventId={id} currentStatus={event.status} />}
 
       {/* Tiers */}
       <section className="space-y-4">
@@ -235,7 +232,8 @@ export default async function EventDetailPage({
         )}
       </section>
 
-      {/* Public link */}
+      {/* Status actions */}
+      {!isFinished && <StatusActions eventId={id} currentStatus={event.status} />}
       {event.status === 'published' && (
         <div className="flex items-center gap-2 text-sm text-purple-300/70 bg-white/5 border border-purple-700/30 rounded-lg px-4 py-3">
           <Globe size={14} className="text-orange-400" />

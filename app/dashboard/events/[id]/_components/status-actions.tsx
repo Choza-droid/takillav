@@ -49,7 +49,7 @@ export default function StatusActions({
         {/* Draft → Published */}
         {currentStatus === 'draft' && (
           <form action={updateEventStatus.bind(null, eventId, 'published')}>
-            <FormButton className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-purple-600 text-white text-sm font-semibold hover:from-orange-600 hover:to-purple-700 transition-all">
+            <FormButton className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold transition-all" style={{background: 'var(--accent-gradient)'}}>
               <Globe size={14} />
               Publicar evento
             </FormButton>
