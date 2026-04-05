@@ -81,7 +81,7 @@ export default async function EventDetailPage({
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-start gap-4">
         <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusStyle[displayStatus]}`}>
@@ -118,13 +118,6 @@ export default async function EventDetailPage({
             )}
           </div>
         </div>
-        {imageUrl && (
-          <Image
-            src={imageUrl} alt={event.title}
-            width={96} height={96} unoptimized
-            className="w-24 h-24 rounded-xl object-cover shrink-0 ring-2 ring-purple-700/50"
-          />
-        )}
       </div>
 
       {/* DRAFT: edit form */}

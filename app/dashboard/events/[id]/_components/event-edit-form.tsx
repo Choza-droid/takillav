@@ -243,15 +243,11 @@ function ImagePreview({ previewUrl, title, eventDate }: {
         <div className="space-y-1.5">
           <p className="text-xs text-purple-400/60">Página del evento</p>
           <div className="relative w-full h-40 rounded-xl overflow-hidden bg-zinc-900">
-            {/* blurred bg */}
             <img src={previewUrl} alt="" aria-hidden
               className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-50" />
-            {/* sharp contained image */}
             <img src={previewUrl} alt={title}
               className="absolute inset-0 w-full h-full object-contain" />
-            {/* gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            {/* title overlay */}
             <div className="absolute bottom-0 left-0 right-0 p-3">
               <p className="text-white font-bold text-sm leading-tight line-clamp-1 drop-shadow">
                 {title || 'Título del evento'}
@@ -329,7 +325,6 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
     ? new Date(defaultValues.event_date).toISOString().slice(0, 16)
     : ''
 
-  // Set initial preview from existing image
   useEffect(() => {
     if (defaultValues?.image_url && !previewUrl) {
       const supabase = createClient()
@@ -430,7 +425,23 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
 
       {/* Image upload + live preview */}
       <div>
-        <label htmlFor="image_file" className="block text-sm font-medium text-purple-300 mb-1">Imagen del evento</label>
+        <label htmlFor="image_file" className="block text-sm font-medium text-purple-300 mb-1">
+          Imagen del evento
+        </label>
+
+        {/* Medidas recomendadas */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
+          <p className="text-xs text-purple-400/50">
+            Tamaño recomendado: <span className="text-purple-300/70 font-medium">1200 × 630 px</span>
+          </p>
+          <p className="text-xs text-purple-400/50">
+            Relación de aspecto: <span className="text-purple-300/70 font-medium">16:9</span>
+          </p>
+          <p className="text-xs text-purple-400/50">
+            Peso máximo: <span className="text-purple-300/70 font-medium">5 MB</span>
+          </p>
+        </div>
+
         {defaultValues?.image_url && !previewUrl && (
           <p className="text-xs text-purple-400/50 mb-2">Ya tienes una imagen. Sube una nueva para reemplazarla.</p>
         )}
