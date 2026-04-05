@@ -15,15 +15,80 @@ export default function StatusActions({
 }) {
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [publishError, setPublishError] = useState<string | null>(null)
   const router = useRouter()
 
   async function handleSaveDraft() {
     const form = document.getElementById('event-edit-form') as HTMLFormElement | null
     if (!form) return
     setSaving(true)
-    form.requestSubmit()
-    // Give the server action time to complete before redirecting
+
+    // Activar flag para saltarse validaciones custom (ubicación e imagen)
+    form.dataset.skipValidation = 'true'
+    // Usar formNoValidate para saltarse también las validaciones nativas del browser
+    const btn = document.createElement('button')
+    btn.type = 'submit'
+    btn.formNoValidate = true
+    btn.style.display = 'none'
+    form.appendChild(btn)
+    btn.click()
+    form.removeChild(btn)
+
     await new Promise(r => setTimeout(r, 1200))
+    router.push('/dashboard')
+  }
+
+  async function handlePublish() {
+    setPublishError(null)
+
+    const form = document.getElementById('event-edit-form') as HTMLFormElement | null
+    if (!form) return
+
+    // 1. Validación nativa del browser (título, descripción, fecha, categoría)
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
+
+    // 2. Validar campos custom (ubicación e imagen)
+    const formData = new FormData(form)
+
+    const locationName = formData.get('location_name') as string
+    if (!locationName?.trim()) {
+      setPublishError('La ubicación es obligatoria antes de publicar.')
+      form.querySelector<HTMLElement>('[name="location_name"]')
+        ?.closest('div')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
+    const imageFile = formData.get('image_file') as File | null
+    const hasExistingImage = form.dataset.hasImage === 'true'
+    const hasNewImage = imageFile && imageFile.size > 0
+    if (!hasExistingImage && !hasNewImage) {
+      setPublishError('La imagen del evento es obligatoria antes de publicar.')
+      document.getElementById('image_file')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
+    // 3. Guardar el formulario primero (con validación activa)
+    setPublishing(true)
+    form.requestSubmit()
+
+    // 4. Esperar a que el server action termine
+    await new Promise(r => setTimeout(r, 1500))
+
+    const formError = form.dataset.submitError
+    if (formError) {
+      setPublishError(`Error al guardar: ${formError}`)
+      setPublishing(false)
+      return
+    }
+
+    // 5. Publicar
+    await updateEventStatus(eventId, 'published')
     router.push('/dashboard')
   }
 
@@ -38,7 +103,7 @@ export default function StatusActions({
           <button
             type="button"
             onClick={handleSaveDraft}
-            disabled={saving}
+            disabled={saving || publishing}
             className="flex items-center gap-2 px-4 py-2 rounded-xl border border-purple-700/50 text-purple-300 text-sm font-semibold hover:bg-purple-900/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
@@ -48,12 +113,16 @@ export default function StatusActions({
 
         {/* Draft → Published */}
         {currentStatus === 'draft' && (
-          <form action={updateEventStatus.bind(null, eventId, 'published')}>
-            <FormButton className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold transition-all" style={{background: 'var(--accent-gradient)'}}>
-              <Globe size={14} />
-              Publicar evento
-            </FormButton>
-          </form>
+          <button
+            type="button"
+            onClick={handlePublish}
+            disabled={publishing || saving}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ background: 'var(--accent-gradient)' }}
+          >
+            {publishing ? <Loader2 size={14} className="animate-spin" /> : <Globe size={14} />}
+            {publishing ? 'Publicando…' : 'Publicar evento'}
+          </button>
         )}
 
         {/* Published → Draft */}
@@ -78,6 +147,14 @@ export default function StatusActions({
           </button>
         )}
       </div>
+
+      {/* Error de publicación */}
+      {publishError && (
+        <p className="text-sm text-red-400 bg-red-900/20 border border-red-700/40 rounded-lg px-3 py-2 flex items-center gap-2">
+          <AlertTriangle size={14} className="shrink-0" />
+          {publishError}
+        </p>
+      )}
 
       {/* Cancel confirmation */}
       {confirmCancel && (

@@ -161,7 +161,9 @@ function LocationPicker({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-purple-300">Ubicación</label>
+      <label className="block text-sm font-medium text-purple-300">
+        Ubicación <span className="text-orange-400">*</span>
+      </label>
       <input type="hidden" name="location_name" value={selected?.name ?? ''} />
       <input type="hidden" name="location_lat"  value={selected?.lat  ?? ''} />
       <input type="hidden" name="location_lng"  value={selected?.lng  ?? ''} />
@@ -239,7 +241,6 @@ function ImagePreview({ previewUrl, title, eventDate }: {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        {/* Preview: evento individual (hero banner) */}
         <div className="space-y-1.5">
           <p className="text-xs text-purple-400/60">Página del evento</p>
           <div className="relative w-full h-40 rounded-xl overflow-hidden bg-zinc-900">
@@ -260,7 +261,6 @@ function ImagePreview({ previewUrl, title, eventDate }: {
           </div>
         </div>
 
-        {/* Preview: card en el home/lista */}
         <div className="space-y-1.5">
           <p className="text-xs text-purple-400/60">Tarjeta en listado</p>
           <div
@@ -268,8 +268,7 @@ function ImagePreview({ previewUrl, title, eventDate }: {
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             <div className="relative h-28 overflow-hidden">
-              <img src={previewUrl} alt={title}
-                className="w-full h-full object-cover" />
+              <img src={previewUrl} alt={title} className="w-full h-full object-cover" />
             </div>
             <div className="p-3 space-y-1">
               <p className="font-semibold text-white text-sm leading-snug line-clamp-1">
@@ -349,10 +348,32 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
     if (isPending) return
     setLocalError(null)
 
-    const formData = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    // El borrador pone data-skip-validation="true" antes de submitear
+    const skipValidation = form.dataset.skipValidation === 'true'
+    delete form.dataset.skipValidation // limpiar el flag siempre
+
+    const formData = new FormData(form)
     const imageFile = formData.get('image_file') as File | null
     formData.delete('image_file')
     formData.set('status', 'draft')
+
+    if (!skipValidation) {
+      // Validar ubicación
+      const locationName = formData.get('location_name') as string
+      if (!locationName?.trim()) {
+        setLocalError('La ubicación es obligatoria')
+        return
+      }
+
+      // Validar imagen
+      const hasExistingImage = !!defaultValues?.image_url
+      const hasNewImage = imageFile && imageFile.size > 0
+      if (!hasExistingImage && !hasNewImage) {
+        setLocalError('La imagen del evento es obligatoria')
+        return
+      }
+    }
 
     if (imageFile && imageFile.size > 0) {
       if (!imageFile.type.startsWith('image/')) { setLocalError('El archivo debe ser una imagen válida'); return }
@@ -380,8 +401,13 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
   const inputClass = "w-full rounded-lg border border-purple-700/40 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-purple-400/50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
 
   return (
-    <form id="event-edit-form" onSubmit={handleSubmit} className="bg-white/5 rounded-2xl border border-purple-700/40 p-6 space-y-5">
-
+    <form
+      id="event-edit-form"
+      onSubmit={handleSubmit}
+      data-has-image={defaultValues?.image_url ? 'true' : ''}
+      className="bg-white/5 rounded-2xl border border-purple-700/40 p-6 space-y-5"
+    >
+      {/* Título */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-purple-300 mb-1">
           Título <span className="text-orange-400">*</span>
@@ -393,13 +419,17 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
           className={inputClass} />
       </div>
 
+      {/* Descripción */}
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-purple-300 mb-1">Descripción</label>
-        <textarea id="description" name="description" rows={3}
+        <label htmlFor="description" className="block text-sm font-medium text-purple-300 mb-1">
+          Descripción <span className="text-orange-400">*</span>
+        </label>
+        <textarea id="description" name="description" rows={3} required
           defaultValue={defaultValues?.description ?? ''} placeholder="Describe el evento..."
           className={`${inputClass} resize-none`} />
       </div>
 
+      {/* Fecha y hora + Categoría */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="event_date" className="block text-sm font-medium text-purple-300 mb-1">
@@ -411,8 +441,11 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
             className={`${inputClass} [color-scheme:dark]`} />
         </div>
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">Categoría</label>
-          <select id="category" name="category" defaultValue={defaultValues?.category ?? 'otro'}
+          <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">
+            Categoría <span className="text-orange-400">*</span>
+          </label>
+          <select id="category" name="category" required
+            defaultValue={defaultValues?.category ?? 'otro'}
             className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}>
             {CATEGORIES.map(cat => (
               <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -421,19 +454,19 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
         </div>
       </div>
 
+      {/* Ubicación */}
       <LocationPicker
         defaultLocationName={defaultValues?.location_name}
         defaultLat={defaultValues?.location_lat}
         defaultLng={defaultValues?.location_lng}
       />
 
-      {/* Image upload + live preview */}
+      {/* Imagen del evento */}
       <div>
         <label htmlFor="image_file" className="block text-sm font-medium text-purple-300 mb-1">
-          Imagen del evento
+          Imagen del evento <span className="text-orange-400">*</span>
         </label>
 
-        {/* Medidas recomendadas */}
         <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
           <p className="text-xs text-purple-400/50">
             Tamaño recomendado: <span className="text-purple-300/70 font-medium">1200 × 630 px</span>
@@ -449,14 +482,14 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
         {defaultValues?.image_url && !previewUrl && (
           <p className="text-xs text-purple-400/50 mb-2">Ya tienes una imagen. Sube una nueva para reemplazarla.</p>
         )}
+
         <input
           id="image_file" name="image_file" type="file" accept="image/*"
           onChange={handleImageChange}
           className="w-full rounded-lg border border-purple-700/40 bg-white/5 px-3 py-2 text-sm text-purple-300 file:mr-3 file:rounded-md file:border-0 file:bg-orange-500/20 file:px-3 file:py-1 file:text-xs file:font-medium file:text-orange-300 hover:file:bg-orange-500/30 transition-all cursor-pointer"
         />
-        <p className="mt-1 text-xs text-purple-400/50">Opcional. Formatos: JPG, PNG, WEBP.</p>
+        <p className="mt-1 text-xs text-purple-400/50">Formatos: JPG, PNG, WEBP.</p>
 
-        {/* Live preview */}
         {previewUrl && (
           <ImagePreview
             previewUrl={previewUrl}
