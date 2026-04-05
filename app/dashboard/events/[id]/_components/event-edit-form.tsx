@@ -314,22 +314,25 @@ export default function EventForm({ action, defaultValues, submitLabel = 'Guarda
           className={`${inputClass} resize-none`} />
       </div>
 
-      <div>
-        <label htmlFor="event_date" className="block text-sm font-medium text-purple-300 mb-1">
-          Fecha y hora <span className="text-orange-400">*</span>
-        </label>
-        <input id="event_date" name="event_date" type="datetime-local" required
-          defaultValue={defaultDate} className={inputClass} />
-      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="event_date" className="block text-sm font-medium text-purple-300 mb-1">
+            Fecha y hora <span className="text-orange-400">*</span>
+          </label>
+          <input id="event_date" name="event_date" type="datetime-local" required
+            defaultValue={defaultDate}
+            className={`${inputClass} [color-scheme:dark]`} />
+        </div>
 
-      <div>
-        <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">Categoría</label>
-        <select id="category" name="category" defaultValue={defaultValues?.category ?? 'otro'}
-          className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}>
-          {CATEGORIES.map(cat => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
-          ))}
-        </select>
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">Categoría</label>
+          <select id="category" name="category" defaultValue={defaultValues?.category ?? 'otro'}
+            className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}>
+            {CATEGORIES.map(cat => (
+              <option key={cat.value} value={cat.value}>{cat.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <LocationPicker
