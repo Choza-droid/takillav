@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { CheckCircle, FileText, CreditCard, ArrowRight, ExternalLink } from 'lucide-react'
 import FormButton from '@/components/form-button'
+import Link from 'next/link'
 import { acceptTerms, startStripeOnboarding } from './actions'
 
 export default async function OnboardingPage() {
@@ -23,8 +24,6 @@ export default async function OnboardingPage() {
   const termsAccepted  = !!profile?.terms_accepted_at
   const stripeComplete = !!profile?.stripe_onboarding_complete
 
-  if (termsAccepted && stripeComplete) redirect('/dashboard/events')
-
   const step = !termsAccepted ? 1 : 2
 
   return (
@@ -33,7 +32,7 @@ export default async function OnboardingPage() {
       <div>
         <h1 className="text-2xl font-bold text-zinc-900">Configura tu cuenta de organizador</h1>
         <p className="text-zinc-500 mt-1">
-          Completa estos pasos para publicar eventos y recibir pagos.
+          Acepta los términos para crear eventos. Conecta tu cuenta de pagos solo si quieres cobrar por boletos.
         </p>
       </div>
 
@@ -116,7 +115,7 @@ export default async function OnboardingPage() {
           </div>
         </div>
 
-        {/* Paso 2 — Stripe Connect */}
+        {/* Paso 2 — Stripe Connect (opcional, solo para eventos de pago) */}
         <div className={`rounded-2xl border p-6 transition-all ${
           stripeComplete
             ? 'bg-green-50 border-green-200'
@@ -134,9 +133,14 @@ export default async function OnboardingPage() {
               }
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-zinc-900">Paso 2 — Cuenta de pagos</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="font-semibold text-zinc-900">Paso 2 — Cuenta de pagos</p>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
+                  Opcional — solo para eventos con cobro
+                </span>
+              </div>
               <p className="text-sm text-zinc-500 mt-0.5">
-                Conecta tu cuenta bancaria para recibir los pagos de tus eventos directamente.
+                Conecta tu cuenta bancaria para cobrar por tus boletos. No es necesario para eventos gratuitos.
               </p>
 
               {stripeComplete ? (
@@ -148,13 +152,21 @@ export default async function OnboardingPage() {
                     <li>• Los cargos por servicio los paga el comprador, no tú</li>
                     <li>• La verificación de identidad es segura y está a cargo de Stripe</li>
                   </ul>
-                  <form action={startStripeOnboarding}>
-                    <FormButton className="px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 flex items-center gap-2">
-                      <CreditCard size={15} />
-                      {profile?.stripe_account_id ? 'Continuar configuración' : 'Configurar cuenta de pagos'}
-                      <ArrowRight size={15} />
-                    </FormButton>
-                  </form>
+                  <div className="flex flex-wrap gap-3">
+                    <form action={startStripeOnboarding}>
+                      <FormButton className="px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 flex items-center gap-2">
+                        <CreditCard size={15} />
+                        {profile?.stripe_account_id ? 'Continuar configuración' : 'Configurar cuenta de pagos'}
+                        <ArrowRight size={15} />
+                      </FormButton>
+                    </form>
+                    <Link
+                      href="/dashboard/events"
+                      className="px-5 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 text-sm font-semibold hover:bg-zinc-50 flex items-center gap-2 transition-colors"
+                    >
+                      Ahora no, ir a mis eventos
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>

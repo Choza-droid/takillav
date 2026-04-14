@@ -17,14 +17,12 @@ export async function createEvent(
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, terms_accepted_at, stripe_onboarding_complete')
+    .select('role, terms_accepted_at')
     .eq('id', user.id)
     .single()
 
   if (profile?.role !== 'organizer') return { error: 'Solo organizadores pueden crear eventos' }
-  if (!profile?.terms_accepted_at || !profile?.stripe_onboarding_complete) {
-    redirect('/dashboard/onboarding')
-  }
+  if (!profile?.terms_accepted_at) redirect('/dashboard/onboarding')
 
   const title       = formData.get('title') as string
   const description = formData.get('description') as string

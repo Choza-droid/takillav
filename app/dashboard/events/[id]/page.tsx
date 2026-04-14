@@ -28,7 +28,7 @@ export default async function EventDetailPage({
 
   const [{ data: event }, { data: profile }, { data: tiers }] = await Promise.all([
     supabase.from('events').select('*, venues(name, city)').eq('id', id).single(),
-    supabase.from('profiles').select('role').eq('id', user.id).single(),
+    supabase.from('profiles').select('role, stripe_onboarding_complete').eq('id', user.id).single(),
     supabase.from('ticket_tiers').select('*').eq('event_id', id).order('price'),
   ])
 
@@ -146,7 +146,7 @@ export default async function EventDetailPage({
       {!isDraft && (
         <div className="space-y-3">
           {event.description && (
-            <p className="text-sm text-purple-200/80 bg-white/5 border border-purple-700/30 rounded-xl px-4 py-3">
+            <p className="text-sm text-purple-200/80 bg-white/5 border border-purple-700/30 rounded-xl px-4 py-3 whitespace-pre-wrap">
               {event.description}
             </p>
           )}
@@ -211,7 +211,7 @@ export default async function EventDetailPage({
         {isDraft && (
           <div>
             <h3 className="text-sm font-medium text-purple-300 mb-3">Agregar tier</h3>
-            <TierForm eventId={id} />
+            <TierForm eventId={id} canCharge={!!profile?.stripe_onboarding_complete} />
           </div>
         )}
 

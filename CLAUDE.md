@@ -9,4 +9,6 @@
 7. Keep solutions simple and direct.
 8. User instructions always override this file.
 
+9. This project uses **pnpm** as package manager. Always use `pnpm install` (never `npm install`) when adding dependencies, or the production build on Render will fail with `ERR_PNPM_OUTDATED_LOCKFILE`. Always commit `pnpm-lock.yaml` after installing new packages.
+
 @AGENTS.md

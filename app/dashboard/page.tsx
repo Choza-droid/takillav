@@ -27,7 +27,7 @@ const SIDEBAR_BG = 'rgba(255,255,255,0.03)'
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Section = 'tickets' | 'settings' | 'events' | 'team'
-interface Profile { full_name: string; role: string; terms_accepted_at?: string | null; stripe_onboarding_complete?: boolean }
+interface Profile { full_name: string; role: string; terms_accepted_at?: string | null; stripe_onboarding_complete?: boolean | null }
 interface TicketRow {
   id: string; qr_hash: string; is_used: boolean; used_at: string | null
   ticket_tiers: { name: string; price: number } | null
@@ -211,7 +211,7 @@ function TicketsSection({ tickets }: { tickets: TicketRow[] }) {
                     </div>
                     <div className="pt-2 flex items-center justify-between" style={{ borderTop: BORDER }}>
                       <span className="text-sm font-medium" style={{ color: TEXT_MUTED }}>{tier?.name}</span>
-                      <span className="text-sm font-bold" style={{ color: TEXT }}>${Number(tier?.price ?? 0).toFixed(2)}</span>
+                      <span className="text-sm font-bold" style={{ color: TEXT }}>{Number(tier?.price ?? 0) === 0 ? 'FREE' : `$${Number(tier?.price ?? 0).toFixed(2)}`}</span>
                     </div>
                     <p className="text-xs font-medium" style={{ color: 'var(--color-orange)' }}>Toca para ver QR →</p>
                   </button>
@@ -314,24 +314,41 @@ function EventsSection({ events, loading, onDeleteEvent, profile }: { events: Ev
     </div>
   )
 
-  const onboardingIncomplete = profile?.role === 'organizer' && (!profile?.terms_accepted_at || !profile?.stripe_onboarding_complete)
+  const needsTerms   = profile?.role === 'organizer' && !profile?.terms_accepted_at
+  const needsStripe  = profile?.role === 'organizer' && !!profile?.terms_accepted_at && !profile?.stripe_onboarding_complete
 
   return (
     <Fade id="events">
       <div className="space-y-6">
-        {onboardingIncomplete && (
+        {needsTerms && (
           <div className="rounded-xl px-5 py-4 flex items-center justify-between gap-4"
             style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)' }}>
             <div>
-              <p className="text-sm font-semibold" style={{ color: '#fb923c' }}>Configura tu cuenta de organizador</p>
+              <p className="text-sm font-semibold" style={{ color: '#fb923c' }}>Acepta los términos para publicar</p>
               <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Acepta los términos y conecta tu cuenta de pagos para publicar eventos.
+                Necesitas aceptar los términos y condiciones antes de crear eventos.
               </p>
             </div>
             <Link href="/dashboard/onboarding"
               className="shrink-0 px-3 py-1.5 rounded-lg text-white text-xs font-semibold"
               style={{ background: 'var(--accent-gradient)' }}>
-              Configurar
+              Aceptar
+            </Link>
+          </div>
+        )}
+        {needsStripe && (
+          <div className="rounded-xl px-5 py-4 flex items-center justify-between gap-4"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Organizador gratuito</p>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                Puedes crear eventos gratuitos. Para cobrar por boletos, configura tu cuenta de pagos.
+              </p>
+            </div>
+            <Link href="/dashboard/onboarding"
+              className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+              style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.12)' }}>
+              Activar cobros
             </Link>
           </div>
         )}

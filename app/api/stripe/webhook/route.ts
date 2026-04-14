@@ -37,7 +37,13 @@ function asRequiredMetadata(metadata: Stripe.Metadata | null) {
 async function tryRefund(paymentIntentId: string | null, context: string) {
   if (!paymentIntentId) return
   try {
-    await stripe.refunds.create({ payment_intent: paymentIntentId })
+    // reverse_transfer: true returns the funds from the connected account back to
+    // the platform. Required for destination charges — without it the platform
+    // absorbs the full loss while the organizer keeps the transfer.
+    await stripe.refunds.create({
+      payment_intent: paymentIntentId,
+      reverse_transfer: true,
+    })
     console.log(`[webhook] Reembolso emitido (${context}):`, paymentIntentId)
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)

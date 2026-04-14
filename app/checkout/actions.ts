@@ -47,17 +47,6 @@ export async function startStripeCheckout(formData: FormData) {
   if (!event || event.status !== 'published') throw new Error('El evento no está disponible')
   if (new Date(event.event_date) < new Date()) throw new Error('El evento ya pasó')
 
-  // Obtener cuenta de Stripe del organizador para destination charges
-  const { data: organizer } = await supabase
-    .from('profiles')
-    .select('stripe_account_id, stripe_onboarding_complete')
-    .eq('id', event.organizer_id)
-    .single()
-
-  if (!organizer?.stripe_onboarding_complete || !organizer?.stripe_account_id) {
-    throw new Error('El organizador aún no ha configurado su cuenta de pagos')
-  }
-
   const priceNumber = Number(tier.price)
 
   if (priceNumber === 0) {
@@ -68,6 +57,17 @@ export async function startStripeCheckout(formData: FormData) {
       if (error) throw new Error(error.message)
     }
     redirect('/tickets')
+  }
+
+  // Obtener cuenta de Stripe del organizador para destination charges (solo tiers pagados)
+  const { data: organizer } = await supabase
+    .from('profiles')
+    .select('stripe_account_id, stripe_onboarding_complete')
+    .eq('id', event.organizer_id)
+    .single()
+
+  if (!organizer?.stripe_onboarding_complete || !organizer?.stripe_account_id) {
+    throw new Error('El organizador aún no ha configurado su cuenta de pagos')
   }
 
   const fees = calculateFees(priceNumber, quantity)
@@ -95,6 +95,9 @@ export async function startStripeCheckout(formData: FormData) {
       },
     ],
     payment_intent_data: {
+      // application_fee_amount es deducido del transfer antes de enviarlo al organizador.
+      // Resultado: organizer recibe exactamente ticketPrice × qty; fee aparece en "Collected fees".
+      application_fee_amount: fees.applicationFeeAmountCentavos,
       transfer_data: {
         destination: organizer.stripe_account_id,
         amount: fees.transferAmount,

@@ -102,7 +102,7 @@ function EventCard({ event, supabase, index }: {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            {minPrice === null ? 'Sin tiers' : minPrice === 0 ? 'Gratis' : `Desde $${minPrice.toFixed(2)}`}
+            {minPrice === null ? 'Sin tiers' : minPrice === 0 ? 'FREE' : `Desde $${minPrice.toFixed(2)}`}
           </p>
         </div>
       </div>

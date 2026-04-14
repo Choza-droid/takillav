@@ -72,8 +72,9 @@ export default async function Navbar() {
 
   const baseMenuByRole: Record<string, { label: string; href: string }[]> = {
     customer: [
-      { label: 'Mi cuenta',   href: '/dashboard' },
-      { label: 'Ver eventos', href: '/events'    },
+      { label: 'Mi cuenta',       href: '/dashboard'                  },
+      { label: 'Ver eventos',     href: '/events'                     },
+      { label: 'Publicar eventos', href: '/convertirse-organizador'   },
     ],
     organizer: [
       { label: 'Mi cuenta',   href: '/dashboard'  },
