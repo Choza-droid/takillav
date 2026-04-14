@@ -14,14 +14,12 @@ export async function createEmptyEvent() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, terms_accepted_at, stripe_onboarding_complete')
+    .select('role, terms_accepted_at')
     .eq('id', user.id)
     .single()
 
   if (profile?.role !== 'organizer') redirect('/dashboard')
-  if (!profile?.terms_accepted_at || !profile?.stripe_onboarding_complete) {
-    redirect('/dashboard/onboarding')
-  }
+  if (!profile?.terms_accepted_at) redirect('/dashboard/onboarding')
 
   const { data: event, error } = await supabase
     .from('events')
@@ -108,14 +106,23 @@ export async function updateEventStatus(eventId: string, status: string) {
   if (!user) return
 
   if (status === 'published') {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('stripe_onboarding_complete')
-      .eq('id', user.id)
-      .single()
+    const { data: tiers } = await supabase
+      .from('ticket_tiers')
+      .select('price')
+      .eq('event_id', eventId)
 
-    if (!profile?.stripe_onboarding_complete) {
-      redirect('/dashboard/onboarding')
+    const hasPaidTiers = (tiers ?? []).some(t => Number(t.price) > 0)
+
+    if (hasPaidTiers) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('stripe_onboarding_complete')
+        .eq('id', user.id)
+        .single()
+
+      if (!profile?.stripe_onboarding_complete) {
+        redirect('/dashboard/onboarding')
+      }
     }
   }
 
@@ -139,11 +146,25 @@ export async function addTier(
   const name           = formData.get('name') as string
   const price          = Number(formData.get('price'))
   const total_capacity = Number(formData.get('total_capacity'))
+  const description    = (formData.get('description') as string | null)?.trim() || null
+  const items          = (formData.get('items') as string | null)?.trim() || null
 
   if (!name?.trim())                         return { error: 'El nombre es requerido' }
   if (isNaN(price) || price < 0)             return { error: 'Precio inválido' }
   if (!total_capacity || total_capacity < 1) return { error: 'Capacidad inválida' }
   if (total_capacity > 999)                  return { error: 'La capacidad máxima es 999' }
+
+  if (price > 0) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_onboarding_complete')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile?.stripe_onboarding_complete) {
+      return { error: 'Para cobrar por boletos, primero configura tu cuenta de pagos en el onboarding.' }
+    }
+  }
 
   const { error } = await supabase.from('ticket_tiers').insert({
     event_id,
@@ -151,12 +172,44 @@ export async function addTier(
     price,
     total_capacity,
     available_tickets: total_capacity,
+    description,
+    items,
   })
 
   if (error) return { error: error.message }
 
   revalidatePath(`/dashboard/events/${event_id}`)
   return null
+}
+
+export async function updateTierDescription(tierId: string, eventId: string, description: string) {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  await supabase
+    .from('ticket_tiers')
+    .update({ description: description.trim() || null })
+    .eq('id', tierId)
+
+  revalidatePath(`/dashboard/events/${eventId}`)
+}
+
+export async function updateTierItems(tierId: string, eventId: string, items: string) {
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  await supabase
+    .from('ticket_tiers')
+    .update({ items: items.trim() || null })
+    .eq('id', tierId)
+
+  revalidatePath(`/dashboard/events/${eventId}`)
 }
 
 export async function deleteTier(tierId: string, eventId: string) {

@@ -7,7 +7,7 @@ import FormButton from '@/components/form-button'
 
 const inputClass = "w-full rounded-lg border border-purple-700/40 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-purple-400/50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
 
-export default function TierForm({ eventId }: { eventId: string }) {
+export default function TierForm({ eventId, canCharge }: { eventId: string; canCharge: boolean }) {
   const [state, action] = useActionState(addTier, null)
 
   return (
@@ -40,6 +40,7 @@ export default function TierForm({ eventId }: { eventId: string }) {
             type="number"
             required
             min="0"
+            max={canCharge ? undefined : '0'}
             step="1"
             placeholder="0"
             className={inputClass}
@@ -68,12 +69,26 @@ export default function TierForm({ eventId }: { eventId: string }) {
         <label htmlFor="tier-description" className="block text-xs font-medium text-purple-300 mb-1">
           Descripción <span className="text-purple-400/50 font-normal">(opcional)</span>
         </label>
-        <input
+        <textarea
           id="tier-description"
           name="description"
-          type="text"
+          rows={3}
           placeholder="Ej: Acceso general, incluye consumación mínima..."
-          className={inputClass}
+          className={`${inputClass} resize-y`}
+        />
+      </div>
+
+      {/* Row 2b: items incluidos */}
+      <div>
+        <label htmlFor="tier-items" className="block text-xs font-medium text-purple-300 mb-1">
+          Items incluidos <span className="text-purple-400/50 font-normal">(uno por línea — aparece al escanear)</span>
+        </label>
+        <textarea
+          id="tier-items"
+          name="items"
+          rows={3}
+          placeholder={"2 bebidas\nAcceso backstage\nMerchandise exclusivo"}
+          className={`${inputClass} resize-y`}
         />
       </div>
 
@@ -139,6 +154,16 @@ export default function TierForm({ eventId }: { eventId: string }) {
           50% { background-position: 100% 50%; }
         }
       `}</style>
+
+      {!canCharge && (
+        <p className="text-xs px-3 py-2 rounded-lg" style={{ background: 'rgba(249,115,22,0.08)', color: 'rgba(251,146,60,0.9)', border: '1px solid rgba(249,115,22,0.2)' }}>
+          Eres organizador gratuito — solo puedes crear tiers con precio $0.{' '}
+          <a href="/dashboard/onboarding" className="underline font-medium hover:opacity-80">
+            Configura tu cuenta de pagos
+          </a>{' '}
+          para cobrar por boletos.
+        </p>
+      )}
 
       {state?.error && (
         <p className="text-sm text-red-400">{state.error}</p>

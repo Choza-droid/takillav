@@ -144,6 +144,7 @@ export default async function CheckoutSuccessPage({
               background: 'var(--accent-gradient)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
+              paddingBottom: '0.15em',
             }}
           >
             ¡Pago exitoso!
@@ -242,7 +243,13 @@ async function resolveResult(sessionId: string | undefined): Promise<PageResult>
 
       if (rpcError.message.includes('No hay boletos suficientes') && paymentIntentId) {
         try {
-          await stripe.refunds.create({ payment_intent: paymentIntentId })
+          // reverse_transfer: true returns the funds from the connected account back to
+          // the platform. Required for destination charges — without it the platform
+          // absorbs the full loss while the organizer keeps the transfer.
+          await stripe.refunds.create({
+            payment_intent: paymentIntentId,
+            reverse_transfer: true,
+          })
           console.log('[checkout/success] Reembolso emitido para payment_intent:', paymentIntentId)
         } catch (refundErr: unknown) {
           const msg = refundErr instanceof Error ? refundErr.message : String(refundErr)

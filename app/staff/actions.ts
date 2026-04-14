@@ -5,11 +5,11 @@ import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 
 export type ValidationResult =
-  | { success: true;  message: string; ticket: { eventTitle: string; tierName: string; ownerName: string } }
+  | { success: true;  message: string; ticket: { eventTitle: string; tierName: string; ownerName: string; items: string[] } }
   | { success: false; message: string }
 
 type TicketEventInfo    = { title?: string | null }
-type TicketTierInfo     = { name?: string | null }
+type TicketTierInfo     = { name?: string | null; items?: string | null }
 type TicketProfileInfo  = { full_name?: string | null }
 
 export async function validateTicket(hash: string): Promise<ValidationResult> {
@@ -56,7 +56,7 @@ export async function validateTicket(hash: string): Promise<ValidationResult> {
   // Fetch ticket to check event
   const { data: ticket } = await admin
     .from('tickets')
-    .select('event_id, events(title), ticket_tiers(name), profiles(full_name)')
+    .select('event_id, events(title), ticket_tiers(name, items), profiles(full_name)')
     .eq('id', rpc.ticket_id!)
     .single()
 
@@ -67,13 +67,18 @@ export async function validateTicket(hash: string): Promise<ValidationResult> {
     }
   }
 
+  const tierInfo = ticket?.ticket_tiers as TicketTierInfo | null
+  const rawItems = tierInfo?.items ?? ''
+  const items    = rawItems ? rawItems.split('\n').map(s => s.trim()).filter(Boolean) : []
+
   return {
     success: true,
     message: rpc.message,
     ticket: {
       eventTitle: (ticket?.events as TicketEventInfo | null)?.title ?? '—',
-      tierName:   (ticket?.ticket_tiers as TicketTierInfo | null)?.name ?? '—',
+      tierName:   tierInfo?.name ?? '—',
       ownerName:  (ticket?.profiles as TicketProfileInfo | null)?.full_name ?? 'Sin nombre',
+      items,
     },
   }
 }

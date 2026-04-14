@@ -202,7 +202,7 @@ export default function TicketPanel({
 
           {/* Tier description */}
           {selectedTier?.description && (
-            <p className="text-xs mt-2.5 leading-relaxed"
+            <p className="text-xs mt-2.5 leading-relaxed whitespace-pre-wrap"
               style={{ color: 'rgba(255,255,255,0.45)' }}>
               {selectedTier.description}
             </p>
@@ -214,7 +214,7 @@ export default function TicketPanel({
           <div key={selectedId} className="drum-pop">
             <p className="font-bold leading-none"
               style={{ fontSize: 'clamp(2.4rem, 9vw, 3.5rem)', ...priceStyle }}>
-              {isFree ? 'Gratis' : `$${unitPrice.toFixed(2)}`}
+              {isFree ? 'FREE' : `$${unitPrice.toFixed(2)}`}
             </p>
             {(isPast || isSoldOut) && (
               <p className="text-xs mt-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
@@ -331,7 +331,7 @@ export default function TicketPanel({
             >
               <span className={`flex items-center justify-center gap-2 transition-all duration-250 ${loading ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}>
                 {isFree
-                  ? `Reservar${qty > 1 ? ` ${qty} boletos` : ''} · Gratis`
+                  ? `Reservar${qty > 1 ? ` ${qty} boletos` : ''} · FREE`
                   : `Comprar ${qty > 1 ? `${qty} boletos` : 'boleto'}${!isFree ? ` · $${total.toFixed(2)}` : ''}`
                 }
               </span>

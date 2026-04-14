@@ -128,7 +128,7 @@ export default async function EventDetailPage({
                   style={{ color: 'rgba(255,255,255,0.4)' }}>
                   Acerca del evento
                 </h2>
-                <p className="text-sm leading-relaxed break-words"
+                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap"
                   style={{ color: 'rgba(255,255,255,0.7)', overflowWrap: 'anywhere' }}>
                   {event.description}
                 </p>

@@ -130,7 +130,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
               <div className="flex items-center justify-between">
                 <span className="text-base" style={{ color: 'rgba(255,255,255,0.45)' }}>Precio del boleto</span>
                 <span className="text-base font-semibold text-white">
-                  {isFree ? 'Gratis' : `$${price.toFixed(2)}`}
+                  {isFree ? 'FREE' : `$${price.toFixed(2)}`}
                 </span>
               </div>
               {fees && (
@@ -162,7 +162,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
               style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
               <span className="text-lg font-semibold text-white">Total</span>
               <span className="font-bold text-white" style={{ fontSize: '2rem' }}>
-                {isFree ? 'Gratis' : `$${total.toFixed(2)}`}
+                {isFree ? 'FREE' : `$${total.toFixed(2)}`}
               </span>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
               <input type="hidden" name="eventId" value={eventId} />
               <input type="hidden" name="tierId"  value={tierId} />
               <input type="hidden" name="quantity" value={String(finalQuantity)} />
-              <SubmitButton label={isFree ? 'Confirmar boletos gratis' : `Pagar $${fees!.totalAmount.toFixed(2)} MXN`} />
+              <SubmitButton label={isFree ? 'Confirmar boletos · FREE' : `Pagar $${fees!.totalAmount.toFixed(2)} MXN`} />
             </form>
 
             <p className="text-sm text-center leading-relaxed" style={{ color: 'rgba(255,255,255,0.3)' }}>

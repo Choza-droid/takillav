@@ -168,10 +168,23 @@ export default function Scanner() {
             <p className="text-white/80 text-sm">{result.message}</p>
 
             {result.success && (
-              <div className="w-full bg-white/15 rounded-xl p-4 text-sm space-y-1.5 text-white">
+              <div className="w-full bg-white/15 rounded-xl p-4 text-sm space-y-2 text-white">
                 <p><span className="text-white/60">Evento</span><br />{result.ticket.eventTitle}</p>
                 <p><span className="text-white/60">Tier</span><br />{result.ticket.tierName}</p>
                 <p><span className="text-white/60">Titular</span><br />{result.ticket.ownerName}</p>
+                {result.ticket.items.length > 0 && (
+                  <div className="pt-1 border-t border-white/20">
+                    <p className="text-white/60 mb-1">Incluye</p>
+                    <ul className="space-y-0.5">
+                      {result.ticket.items.map((item, i) => (
+                        <li key={i} className="flex items-center gap-1.5 font-medium">
+                          <span className="text-white/60">•</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 

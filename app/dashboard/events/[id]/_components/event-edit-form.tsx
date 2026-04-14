@@ -438,9 +438,9 @@ export default function EventForm({ action, defaultValues }: Props) {
         <label htmlFor="description" className="block text-sm font-medium text-purple-300 mb-1">
           Descripción <span className="text-orange-400">*</span>
         </label>
-        <textarea id="description" name="description" rows={3} required
+        <textarea id="description" name="description" rows={6}
           defaultValue={defaultValues?.description ?? ''} placeholder="Describe el evento..."
-          className={`${inputClass} resize-none`} />
+          className={`${inputClass} resize-y`} />
       </div>
 
       {/* Fecha y hora + Categoría */}
