@@ -23,8 +23,13 @@ export default async function ConvertirseOrganizadorPage() {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role === 'organizer' || profile?.role === 'admin') {
+  if (profile?.role === 'admin') {
     redirect('/dashboard')
+  }
+
+  // Organizador free → mandarlo directo al onboarding de Stripe para que pueda subir a pro
+  if (profile?.role === 'organizer') {
+    redirect('/dashboard/onboarding')
   }
 
   if (!ORGANIZER_REGISTRATION_OPEN) {
