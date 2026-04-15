@@ -22,14 +22,14 @@ type EditMode = 'description' | 'items' | 'effect' | null
 // ── Estilos de efecto ────────────────────────────────────────────────────────
 const effectBadge: Record<string, React.CSSProperties> = {
   gold: {
-    background: 'linear-gradient(135deg, #78350f, #b45309, #d97706, #fbbf24, #d97706, #b45309)',
+    backgroundImage: 'linear-gradient(135deg, #78350f, #b45309, #d97706, #fbbf24, #d97706, #b45309)',
     backgroundSize: '200% 200%',
     animation: 'goldWave 3s ease infinite',
     color: '#fef3c7',
     textShadow: '0 1px 2px rgba(0,0,0,0.5)',
   },
   diamond: {
-    background: 'linear-gradient(135deg, #0c4a6e, #0369a1, #0ea5e9, #7dd3fc, #0ea5e9, #0369a1)',
+    backgroundImage: 'linear-gradient(135deg, #0c4a6e, #0369a1, #0ea5e9, #7dd3fc, #0ea5e9, #0369a1)',
     backgroundSize: '200% 200%',
     animation: 'diamondWave 3s ease infinite',
     color: '#e0f2fe',
@@ -164,7 +164,7 @@ export default function TierList({ tiers, eventId }: { tiers: Tier[]; eventId: s
                         className="text-purple-400/60 hover:text-orange-400 transition-colors p-1 text-xs"
                         title="Cambiar efecto visual"
                       >
-                        {effect === 'gold' ? '✦' : effect === 'diamond' ? '💎' : '✨'}
+                        {effect === 'gold' ? '✨' : effect === 'diamond' ? '💎' : '✦'}
                       </button>
                     </>
                   )}
