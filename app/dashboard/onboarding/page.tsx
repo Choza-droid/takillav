@@ -161,7 +161,7 @@ export default async function OnboardingPage() {
                       </FormButton>
                     </form>
                     <Link
-                      href="/dashboard/events"
+                      href="/dashboard"
                       className="px-5 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 text-sm font-semibold hover:bg-zinc-50 flex items-center gap-2 transition-colors"
                     >
                       Ahora no, ir a mis eventos
