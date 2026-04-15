@@ -2,8 +2,13 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { becomeOrganizer } from './actions'
-import { CheckCircle, CreditCard, ArrowRight, Zap, BadgeDollarSign, TrendingUp, Clock } from 'lucide-react'
+import { CheckCircle, CreditCard, ArrowRight, Zap, BadgeDollarSign, TrendingUp, Clock, Lock } from 'lucide-react'
 import Link from 'next/link'
+
+// ── REGISTRO CERRADO ──────────────────────────────────────────────────────────
+// Cambiar a true para abrir el registro de organizadores.
+const ORGANIZER_REGISTRATION_OPEN = false
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default async function ConvertirseOrganizadorPage() {
   const cookieStore = await cookies()
@@ -20,6 +25,38 @@ export default async function ConvertirseOrganizadorPage() {
 
   if (profile?.role === 'organizer' || profile?.role === 'admin') {
     redirect('/dashboard')
+  }
+
+  if (!ORGANIZER_REGISTRATION_OPEN) {
+    return (
+      <main
+        className="min-h-screen flex items-center justify-center px-4 py-16"
+        style={{ background: 'var(--background)' }}
+      >
+        <div className="max-w-md w-full text-center space-y-6">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+          >
+            <Lock size={28} style={{ color: 'rgba(255,255,255,0.4)' }} />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold text-white">Registro de organizadores cerrado</h1>
+            <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Por el momento no estamos aceptando nuevos organizadores.
+              Estamos trabajando para abrir el registro próximamente.
+            </p>
+          </div>
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90"
+            style={{ background: 'var(--accent-gradient)' }}
+          >
+            Ver eventos disponibles
+          </Link>
+        </div>
+      </main>
+    )
   }
 
   const FEATURES_FREE = [
