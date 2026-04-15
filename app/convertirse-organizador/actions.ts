@@ -4,7 +4,14 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
+// ── REGISTRO CERRADO — debe coincidir con el flag en page.tsx ─────────────────
+const ORGANIZER_REGISTRATION_OPEN = false
+// ─────────────────────────────────────────────────────────────────────────────
+
 export async function becomeOrganizer(formData: FormData) {
+  if (!ORGANIZER_REGISTRATION_OPEN) {
+    throw new Error('El registro de organizadores está cerrado temporalmente.')
+  }
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
