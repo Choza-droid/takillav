@@ -8,14 +8,41 @@ import { createClient } from '@/utils/supabase/client'
 import { EVENT_IMAGES_BUCKET } from '@/utils/supabase/storage'
 
 export const CATEGORIES = [
-  { value: 'musica',      label: 'Música'        },
-  { value: 'arte',        label: 'Arte'          },
-  { value: 'social',      label: 'Evento social' },
-  { value: 'nocturna',    label: 'Vida nocturna' },
-  { value: 'otro',        label: 'Otro'          },
+  { value: 'musica',   label: 'Música'        },
+  { value: 'arte',     label: 'Arte'          },
+  { value: 'social',   label: 'Evento social' },
+  { value: 'nocturna', label: 'Vida nocturna' },
+  { value: 'otro',     label: 'Otro'          },
 ]
 
-// ─── Mapbox location picker ────────────────────────────────────────────────────
+// ─── Time slots ───────────────────────────────────────────────────────────────
+
+function generateTimeSlots(daysAhead = 60) {
+  const slots = []
+  const now = new Date()
+  const start = new Date(now)
+  // Redondear al siguiente bloque de 30 min
+  const mins = now.getMinutes()
+  if (mins < 30) {
+    start.setMinutes(30, 0, 0)
+  } else {
+    start.setMinutes(0, 0, 0)
+    start.setHours(start.getHours() + 1)
+  }
+
+  for (let i = 0; i < daysAhead * 24 * 2; i++) {
+    const date = new Date(start.getTime() + i * 30 * 60 * 1000)
+    const value = date.toISOString().slice(0, 16)
+    const label = date.toLocaleDateString('es-MX', {
+      weekday: 'short', day: 'numeric', month: 'short',
+      hour: '2-digit', minute: '2-digit', hour12: true,
+    })
+    slots.push({ value, label })
+  }
+  return slots
+}
+
+// ─── Mapbox location picker ───────────────────────────────────────────────────
 
 interface MapboxFeature {
   id: string
@@ -312,6 +339,7 @@ type Props = {
     title?: string
     description?: string
     event_date?: string
+    event_end_date?: string
     status?: string
     image_url?: string | null
     category?: string | null
@@ -323,21 +351,30 @@ type Props = {
   onCancel?: () => void
 }
 
-export default function EventForm({ action, defaultValues }: Props) {
-  const [state, formAction]                = useActionState(action, null)
+export default function EventEditForm({ action, defaultValues }: Props) {
+  const [state, formAction]                = useActionState<{ error: string } | null, FormData>(action, null)
   const [isActionPending, startTransition] = useTransition()
   const [uploading, setUploading]          = useState(false)
   const [localError, setLocalError]        = useState<string | null>(null)
   const [liveTitle, setLiveTitle]          = useState(defaultValues?.title ?? '')
-  const [liveDate, setLiveDate]            = useState(defaultValues?.event_date ?? '')
 
   const isPending = uploading || isActionPending
 
-  const defaultDate = defaultValues?.event_date
+  // Valor inicial para el select de inicio
+  const defaultDateValue = defaultValues?.event_date
     ? new Date(defaultValues.event_date).toISOString().slice(0, 16)
     : ''
 
-  const imageUrl = defaultValues && defaultValues.image_url
+  // Valor inicial para el select de fin
+  const defaultEndDateValue = defaultValues?.event_end_date
+    ? new Date(defaultValues.event_end_date).toISOString().slice(0, 16)
+    : ''
+
+  const [liveDate, setLiveDate] = useState(defaultDateValue)
+
+  const timeSlots = useMemo(() => generateTimeSlots(60), [])
+
+  const imageUrl = defaultValues?.image_url
 
   const initialPreviewUrl = useMemo(() => {
     if (imageUrl) {
@@ -353,8 +390,7 @@ export default function EventForm({ action, defaultValues }: Props) {
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    const url = URL.createObjectURL(file)
-    setPreviewUrl(url)
+    setPreviewUrl(URL.createObjectURL(file))
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -363,9 +399,8 @@ export default function EventForm({ action, defaultValues }: Props) {
     setLocalError(null)
 
     const form = e.currentTarget
-    // El borrador pone data-skip-validation="true" antes de submitear
     const skipValidation = form.dataset.skipValidation === 'true'
-    delete form.dataset.skipValidation // limpiar el flag siempre
+    delete form.dataset.skipValidation
 
     const formData = new FormData(form)
     const imageFile = formData.get('image_file') as File | null
@@ -373,14 +408,11 @@ export default function EventForm({ action, defaultValues }: Props) {
     formData.set('status', 'draft')
 
     if (!skipValidation) {
-      // Validar ubicación
       const locationName = formData.get('location_name') as string
       if (!locationName?.trim()) {
         setLocalError('La ubicación es obligatoria')
         return
       }
-
-      // Validar imagen
       const hasExistingImage = !!defaultValues?.image_url
       const hasNewImage = imageFile && imageFile.size > 0
       if (!hasExistingImage && !hasNewImage) {
@@ -443,29 +475,74 @@ export default function EventForm({ action, defaultValues }: Props) {
           className={`${inputClass} resize-y`} />
       </div>
 
-      {/* Fecha y hora + Categoría */}
+      {/* Fecha inicio + Fecha fin */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="event_date" className="block text-sm font-medium text-purple-300 mb-1">
-            Fecha y hora <span className="text-orange-400">*</span>
+            Inicio <span className="text-orange-400">*</span>
           </label>
-          <input id="event_date" name="event_date" type="datetime-local" required
-            defaultValue={defaultDate}
+          <select
+            id="event_date"
+            name="event_date"
+            required
+            value={liveDate}
             onChange={e => setLiveDate(e.target.value)}
-            className={`${inputClass} [color-scheme:dark]`} />
-        </div>
-        <div>
-          <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">
-            Categoría <span className="text-orange-400">*</span>
-          </label>
-          <select id="category" name="category" required
-            defaultValue={defaultValues?.category ?? 'otro'}
-            className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}>
-            {CATEGORIES.map(cat => (
-              <option key={cat.value} value={cat.value}>{cat.label}</option>
+            className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}
+          >
+            <option value="">Selecciona fecha y hora</option>
+            {/* Si hay valor guardado que no está en los slots futuros, mostrarlo igual */}
+            {defaultDateValue && !timeSlots.find(s => s.value === defaultDateValue) && (
+              <option value={defaultDateValue}>
+                {new Date(defaultDateValue).toLocaleDateString('es-MX', {
+                  weekday: 'short', day: 'numeric', month: 'short',
+                  hour: '2-digit', minute: '2-digit', hour12: true,
+                })}
+              </option>
+            )}
+            {timeSlots.map(slot => (
+              <option key={slot.value} value={slot.value}>{slot.label}</option>
             ))}
           </select>
         </div>
+        <div>
+          <label htmlFor="event_end_date" className="block text-sm font-medium text-purple-300 mb-1">
+            Fin <span className="text-orange-400">*</span>
+          </label>
+          <select
+            id="event_end_date"
+            name="event_end_date"
+            required
+            defaultValue={defaultEndDateValue}
+            className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}
+          >
+            <option value="">Selecciona fecha y hora</option>
+            {defaultEndDateValue && !timeSlots.find(s => s.value === defaultEndDateValue) && (
+              <option value={defaultEndDateValue}>
+                {new Date(defaultEndDateValue).toLocaleDateString('es-MX', {
+                  weekday: 'short', day: 'numeric', month: 'short',
+                  hour: '2-digit', minute: '2-digit', hour12: true,
+                })}
+              </option>
+            )}
+            {timeSlots.map(slot => (
+              <option key={slot.value} value={slot.value}>{slot.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Categoría */}
+      <div>
+        <label htmlFor="category" className="block text-sm font-medium text-purple-300 mb-1">
+          Categoría <span className="text-orange-400">*</span>
+        </label>
+        <select id="category" name="category" required
+          defaultValue={defaultValues?.category ?? 'otro'}
+          className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}>
+          {CATEGORIES.map(cat => (
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Ubicación */}

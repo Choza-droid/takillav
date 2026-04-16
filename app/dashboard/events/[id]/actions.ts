@@ -61,6 +61,7 @@ export async function updateEvent(
   const title         = formData.get('title') as string
   const description   = formData.get('description') as string
   const event_date    = formData.get('event_date') as string
+  const event_end_date = formData.get('event_end_date') as string
   const venue_id      = formData.get('venue_id') as string
   const image_path    = (formData.get('image_path') as string | null)?.trim() || null
   const status        = formData.get('status') as string
@@ -76,6 +77,7 @@ export async function updateEvent(
     title:         title.trim(),
     description:   description?.trim() || null,
     event_date,
+    event_end_date: event_end_date || null,
     venue_id:      venue_id || null,
     status:        status || 'draft',
     category:      category || 'otro',

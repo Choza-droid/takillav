@@ -28,6 +28,7 @@ export async function createEventWithInfo(
   const title         = formData.get('title') as string
   const description   = formData.get('description') as string
   const event_date    = formData.get('event_date') as string
+  const event_end_date = formData.get('event_end_date') as string
   const image_path    = (formData.get('image_path') as string | null)?.trim() || null
   const category      = formData.get('category') as string
   const location_name = (formData.get('location_name') as string | null)?.trim() || null
@@ -46,6 +47,7 @@ export async function createEventWithInfo(
       title:        title.trim(),
       description:  description?.trim() || null,
       event_date,
+      event_end_date: event_end_date || null,
       image_url:    image_path,
       status:       'draft',
       category:     category || 'otro',
