@@ -3,14 +3,14 @@
 import { useActionState, useTransition, useState } from 'react'
 import Link from 'next/link'
 import { Loader2 } from 'lucide-react'
-import { createEvent } from '../actions'
+import { createEventWithInfo } from '../actions'
 import { createClient } from '@/utils/supabase/client'
 import { EVENT_IMAGES_BUCKET } from '@/utils/supabase/storage'
 
 type Venue = { id: string; name: string; city: string }
 
 export default function EventForm({ venues }: { venues: Venue[] }) {
-  const [state, action] = useActionState(createEvent, null)
+  const [state, action] = useActionState<{ error: string } | null, FormData>(createEventWithInfo, null)
   const [isActionPending, startTransition] = useTransition()
   const [uploading, setUploading] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
