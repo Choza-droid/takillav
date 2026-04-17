@@ -64,6 +64,11 @@ export async function POST(request: Request) {
 
   const expiresAt = Math.floor(Date.now() / 1000) + 600 // 10 minutos
 
+  // Idempotency key: misma combinación dentro de la ventana de 10 min = mismo PaymentIntent.
+  // Evita duplicados de React StrictMode y dobles submits.
+  const bucket = Math.floor(Date.now() / (10 * 60 * 1000))
+  const idempotencyKey = `pi_${user.id}_${tierId}_${eventId}_${quantity}_${bucket}`
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(fees.totalAmount * 100),
     currency: 'mxn',
@@ -76,7 +81,7 @@ export async function POST(request: Request) {
       quantity:   String(quantity),
       expires_at: String(expiresAt),
     },
-  })
+  }, { idempotencyKey })
 
   return NextResponse.json({
     clientSecret: paymentIntent.client_secret,
