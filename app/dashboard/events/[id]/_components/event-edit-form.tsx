@@ -1,11 +1,13 @@
 'use client'
 
-import { useActionState, useTransition, useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useActionState, useTransition, useState, useMemo } from 'react'
 import Image from 'next/image'
 import type mapboxgl from 'mapbox-gl'
+import { useRef, useEffect, useCallback } from 'react'
 import { Loader2, MapPin, X, CalendarDays, Eye } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { EVENT_IMAGES_BUCKET } from '@/utils/supabase/storage'
+import DateTimePicker from '@/app/dashboard/events/new/_components/date-time-picker'
 
 export const CATEGORIES = [
   { value: 'musica',   label: 'Música'        },
@@ -14,33 +16,6 @@ export const CATEGORIES = [
   { value: 'nocturna', label: 'Vida nocturna' },
   { value: 'otro',     label: 'Otro'          },
 ]
-
-// ─── Time slots ───────────────────────────────────────────────────────────────
-
-function generateTimeSlots(daysAhead = 60) {
-  const slots = []
-  const now = new Date()
-  const start = new Date(now)
-  // Redondear al siguiente bloque de 30 min
-  const mins = now.getMinutes()
-  if (mins < 30) {
-    start.setMinutes(30, 0, 0)
-  } else {
-    start.setMinutes(0, 0, 0)
-    start.setHours(start.getHours() + 1)
-  }
-
-  for (let i = 0; i < daysAhead * 24 * 2; i++) {
-    const date = new Date(start.getTime() + i * 30 * 60 * 1000)
-    const value = date.toISOString().slice(0, 16)
-    const label = date.toLocaleDateString('es-MX', {
-      weekday: 'short', day: 'numeric', month: 'short',
-      hour: '2-digit', minute: '2-digit', hour12: true,
-    })
-    slots.push({ value, label })
-  }
-  return slots
-}
 
 // ─── Mapbox location picker ───────────────────────────────────────────────────
 
@@ -268,7 +243,6 @@ function ImagePreview({ previewUrl, title, eventDate }: {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
         <div className="space-y-1.5">
           <p className="text-xs text-purple-400/60">Página del evento</p>
           <div className="relative w-full h-40 rounded-xl overflow-hidden bg-zinc-900">
@@ -325,7 +299,6 @@ function ImagePreview({ previewUrl, title, eventDate }: {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   )
@@ -357,22 +330,9 @@ export default function EventEditForm({ action, defaultValues }: Props) {
   const [uploading, setUploading]          = useState(false)
   const [localError, setLocalError]        = useState<string | null>(null)
   const [liveTitle, setLiveTitle]          = useState(defaultValues?.title ?? '')
+  const [liveDate, setLiveDate]            = useState(defaultValues?.event_date ?? '')
 
   const isPending = uploading || isActionPending
-
-  // Valor inicial para el select de inicio
-  const defaultDateValue = defaultValues?.event_date
-    ? new Date(defaultValues.event_date).toISOString().slice(0, 16)
-    : ''
-
-  // Valor inicial para el select de fin
-  const defaultEndDateValue = defaultValues?.event_end_date
-    ? new Date(defaultValues.event_end_date).toISOString().slice(0, 16)
-    : ''
-
-  const [liveDate, setLiveDate] = useState(defaultDateValue)
-
-  const timeSlots = useMemo(() => generateTimeSlots(60), [])
 
   const imageUrl = defaultValues?.image_url
 
@@ -408,11 +368,23 @@ export default function EventEditForm({ action, defaultValues }: Props) {
     formData.set('status', 'draft')
 
     if (!skipValidation) {
+      const startISO = formData.get('event_date') as string
+      const endISO   = formData.get('event_end_date') as string
+
+      if (!startISO) { setLocalError('Selecciona la fecha y hora de inicio'); return }
+      if (!endISO)   { setLocalError('Selecciona la fecha y hora de fin'); return }
+
+      if (new Date(endISO) <= new Date(startISO)) {
+        setLocalError('La hora de fin debe ser después de la hora de inicio')
+        return
+      }
+
       const locationName = formData.get('location_name') as string
       if (!locationName?.trim()) {
         setLocalError('La ubicación es obligatoria')
         return
       }
+
       const hasExistingImage = !!defaultValues?.image_url
       const hasNewImage = imageFile && imageFile.size > 0
       if (!hasExistingImage && !hasNewImage) {
@@ -476,59 +448,21 @@ export default function EventEditForm({ action, defaultValues }: Props) {
       </div>
 
       {/* Fecha inicio + Fecha fin */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="event_date" className="block text-sm font-medium text-purple-300 mb-1">
-            Inicio <span className="text-orange-400">*</span>
-          </label>
-          <select
-            id="event_date"
-            name="event_date"
-            required
-            value={liveDate}
-            onChange={e => setLiveDate(e.target.value)}
-            className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}
-          >
-            <option value="">Selecciona fecha y hora</option>
-            {/* Si hay valor guardado que no está en los slots futuros, mostrarlo igual */}
-            {defaultDateValue && !timeSlots.find(s => s.value === defaultDateValue) && (
-              <option value={defaultDateValue}>
-                {new Date(defaultDateValue).toLocaleDateString('es-MX', {
-                  weekday: 'short', day: 'numeric', month: 'short',
-                  hour: '2-digit', minute: '2-digit', hour12: true,
-                })}
-              </option>
-            )}
-            {timeSlots.map(slot => (
-              <option key={slot.value} value={slot.value}>{slot.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="event_end_date" className="block text-sm font-medium text-purple-300 mb-1">
-            Fin <span className="text-orange-400">*</span>
-          </label>
-          <select
-            id="event_end_date"
-            name="event_end_date"
-            required
-            defaultValue={defaultEndDateValue}
-            className={`${inputClass} [&>option]:bg-[#1a1035] [&>option]:text-white`}
-          >
-            <option value="">Selecciona fecha y hora</option>
-            {defaultEndDateValue && !timeSlots.find(s => s.value === defaultEndDateValue) && (
-              <option value={defaultEndDateValue}>
-                {new Date(defaultEndDateValue).toLocaleDateString('es-MX', {
-                  weekday: 'short', day: 'numeric', month: 'short',
-                  hour: '2-digit', minute: '2-digit', hour12: true,
-                })}
-              </option>
-            )}
-            {timeSlots.map(slot => (
-              <option key={slot.value} value={slot.value}>{slot.label}</option>
-            ))}
-          </select>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <DateTimePicker
+          label="Inicio del evento"
+          nameDate="event_date"
+          required
+          minDate={new Date()}
+          defaultValue={defaultValues?.event_date}
+        />
+        <DateTimePicker
+          label="Fin del evento"
+          nameDate="event_end_date"
+          required
+          minDate={new Date()}
+          defaultValue={defaultValues?.event_end_date}
+        />
       </div>
 
       {/* Categoría */}
@@ -570,7 +504,7 @@ export default function EventEditForm({ action, defaultValues }: Props) {
           </p>
         </div>
 
-        {defaultValues?.image_url && !previewUrl && (
+        {defaultValues?.image_url && (
           <p className="text-xs text-purple-400/50 mb-2">Ya tienes una imagen. Sube una nueva para reemplazarla.</p>
         )}
 
