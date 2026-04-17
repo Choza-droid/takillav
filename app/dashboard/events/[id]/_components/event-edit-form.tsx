@@ -330,7 +330,7 @@ export default function EventEditForm({ action, defaultValues }: Props) {
   const [uploading, setUploading]          = useState(false)
   const [localError, setLocalError]        = useState<string | null>(null)
   const [liveTitle, setLiveTitle]          = useState(defaultValues?.title ?? '')
-  const [liveDate, setLiveDate]            = useState(defaultValues?.event_date ?? '')
+  const liveDate                            = defaultValues?.event_date ?? ''
 
   const isPending = uploading || isActionPending
 
