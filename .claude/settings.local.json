@@ -17,7 +17,8 @@
       "Bash(find .next -name *.html)",
       "Bash(pnpm install:*)",
       "Bash(npx plugins *)",
-      "mcp__plugin_vercel_vercel__web_fetch_vercel_url"
+      "mcp__plugin_vercel_vercel__web_fetch_vercel_url",
+      "Bash(pnpm tsc *)"
     ]
   }
 }
