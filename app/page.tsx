@@ -7,6 +7,17 @@ import { Ticket, CalendarDays, MapPin, QrCode, ShieldCheck, Zap } from 'lucide-r
 import Navbar from '@/components/navbar'
 import DomeGallery from '@/components/dome-gallery'
 
+const DOME_STOCK = [
+  { src: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&auto=format&fit=crop', alt: 'Concert' },
+  { src: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&auto=format&fit=crop', alt: 'Festival' },
+  { src: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=600&auto=format&fit=crop', alt: 'Event' },
+  { src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop', alt: 'Music' },
+  { src: 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&auto=format&fit=crop', alt: 'DJ' },
+  { src: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&auto=format&fit=crop', alt: 'Stage' },
+  { src: 'https://images.unsplash.com/photo-1549213783-8284d0336c4f?w=600&auto=format&fit=crop', alt: 'Crowd' },
+  { src: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=600&auto=format&fit=crop', alt: 'Live music' },
+]
+
 const CATEGORY_LABELS: Record<string, string> = {
   musica:   'Música',
   arte:     'Arte',
@@ -36,6 +47,14 @@ export default async function Home() {
     `).eq('status', 'published').gt('event_date', new Date().toISOString()).order('event_date', { ascending: true }).limit(6),
   ])
 
+  const eventDomeImages = (events ?? [])
+    .filter(e => !!e.image_url)
+    .slice(0, 2)
+    .map(e => ({ src: resolveEventImageUrl(supabase, e.image_url)!, alt: e.title }))
+    .filter(e => !!e.src)
+
+  const domeImages = [...eventDomeImages, ...DOME_STOCK.slice(eventDomeImages.length)]
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
@@ -49,6 +68,7 @@ export default async function Home() {
         {/* Dome gallery background */}
         <div className="absolute inset-0 z-0" style={{ opacity: 0.45 }}>
           <DomeGallery
+            images={domeImages}
             fit={1.2}
             minRadius={750}
             segments={30}
