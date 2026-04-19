@@ -56,40 +56,41 @@ export default function EventMap({
         // ── Fase 1: acercamiento cinematográfico ──────────────────────
         map.flyTo({
           center: [lng, lat],
-          zoom: 14.5,
+          zoom: 16.6,
           pitch: 50,
           bearing: -20,
           duration: 4000,
           easing: (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
         })
 
-        // ── Fase 2: vista de dron ─────────────────────────────────────
-        timeout2Ref.current = setTimeout(() => {
-          if (!mapInstanceRef.current) return
-          map.easeTo({
-            zoom: 16,
-            pitch: 55,   // reduced from 65 — fewer tiles in perspective
-            bearing: 0,
-            duration: 2000,
-          })
-        }, 4200)
+        // // ── Fase 2: vista de dron ─────────────────────────────────────
+        // timeout2Ref.current = setTimeout(() => {
+        //   if (!mapInstanceRef.current) return
+        //   map.easeTo({
+        //     zoom: 17,
+        //     pitch: 55,   // reduced from 65 — fewer tiles in perspective
+        //     bearing: 0,
+        //     duration: 2000,
+        //   })
+        // }, 4200)
 
         // ── Fase 3: órbita 360 ────────────────────────────────────────
         timeout3Ref.current = setTimeout(() => {
           if (!mapInstanceRef.current) return
           let startTime: number | null = null
+          const startBearing = map.getBearing()
 
           function rotate(timestamp: number) {
             if (!mapInstanceRef.current) return
             if (!startTime) startTime = timestamp
             const elapsed = timestamp - startTime
-            const bearing = (elapsed / 15000) * 360 // vuelta completa cada 15s
+            const bearing = startBearing + (elapsed / 15000) * 360
             map.jumpTo({ bearing: bearing % 360 })
             animFrameRef.current = requestAnimationFrame(rotate)
           }
 
           animFrameRef.current = requestAnimationFrame(rotate)
-        }, 6500)
+        }, 4400)
       })
     }
 
