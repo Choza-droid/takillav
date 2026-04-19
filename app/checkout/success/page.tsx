@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { stripe } from '@/utils/stripe/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { sendPurchaseConfirmation } from '@/utils/email/purchase-confirmation'
 import RetroTicketWallet from './_components/retro-ticket-wallet'
 import ConfettiBurst from './_components/confetti-burst'
 
@@ -237,6 +238,7 @@ async function resolveResult(sessionId: string | undefined, paymentIntentId?: st
       }
 
       if (!orderId) return { status: 'success', tickets: [] }
+      void sendPurchaseConfirmation(userId, orderId)
       return resolveTickets(admin, orderId)
     } catch (err) {
       console.error('[checkout/success] PaymentIntent error:', err)
@@ -331,6 +333,7 @@ async function resolveResult(sessionId: string | undefined, paymentIntentId?: st
     }
 
     if (!orderId) return { status: 'success', tickets: [] }
+    void sendPurchaseConfirmation(userId, orderId)
     return resolveTickets(admin, orderId)
   } catch (err) {
     console.error('[checkout/success] Error inesperado:', err)
