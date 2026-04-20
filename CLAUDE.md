@@ -97,3 +97,33 @@ User roles live in the `profiles` table: `'user' | 'organizer' | 'admin'`. Organ
 ### Pricing
 
 Fee calculation is centralized in `utils/pricing.ts` (`calculateFees`). Always use this function — never inline fee math.
+
+### Component scoping
+
+- `components/` — app-wide shared components (Navbar, DomeGallery, FormButton, etc.)
+- `app/**/_components/` — route-local client components, co-located with their page
+
+### DomeGallery
+
+`components/dome-gallery.tsx` renders the 3D rotating sphere on the home page hero. It accepts an optional `images` prop (`string[] | {src,alt}[]`); when omitted it falls back to `DEFAULT_IMAGES` (Unsplash stock photos). Pass event image URLs here to promote events in the hero background.
+
+### Image storage
+
+Event images live in the `event-images` Supabase Storage bucket. Always use `resolveEventImageUrl(supabase, image_url)` from `utils/supabase/storage.ts` — it normalises full URLs, storage paths, and bare filenames into a signed public URL.
+
+### Maps
+
+Event location maps use **Mapbox GL** (`mapbox-gl`). The map component lives at `app/events/[id]/_components/event-map.tsx`. Requires `NEXT_PUBLIC_MAPBOX_TOKEN` env var.
+
+### API routes
+
+```
+app/api/
+  email/    # Resend inbound webhook — receives and forwards emails
+  stripe/   # Stripe webhook handler
+app/actions/auth.ts  # Shared auth server actions
+```
+
+### Capacitor / iOS
+
+`utils/capacitor.ts` detects the native context. `utils/push-notifications.ts` handles Capacitor Push Notification registration. After any web asset change that needs to reach the native app, run `pnpm cap:sync`.
