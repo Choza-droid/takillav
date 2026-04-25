@@ -72,7 +72,8 @@ export async function POST(request: Request) {
 
   const totalAmountCentavos = Math.round(fees.totalAmount * 100)
   const nowSecs  = Math.floor(Date.now() / 1000)
-  const expiresAt = nowSecs + 600
+  const windowBucket = Math.floor(nowSecs / 600)
+  const expiresAt = (windowBucket + 1) * 600  // deterministic: end of current 10-min window
 
   // ── LOCK ──────────────────────────────────────────────────────────────────
   const lockKey = `pi_lock_${user.id}_${tierId}_${eventId}`
@@ -116,7 +117,7 @@ export async function POST(request: Request) {
       })
 
       const idempotencyKey =
-        `pi_${user.id}_${tierId}_${quantity}_${totalAmountCentavos}_${Math.floor(nowSecs / 600)}`
+        `pi_${user.id}_${tierId}_${quantity}_${totalAmountCentavos}_${windowBucket}`
 
       paymentIntent = await stripe.paymentIntents.create(
         {
