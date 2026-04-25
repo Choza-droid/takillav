@@ -71,9 +71,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'El precio es menor al mínimo permitido' }, { status: 400 })
 
   const totalAmountCentavos = Math.round(fees.totalAmount * 100)
-  const nowSecs      = Math.floor(Date.now() / 1000)
-  const windowBucket = Math.floor(nowSecs / 600)
-  const expiresAt    = nowSecs + 600  // 10 min from now, personal to this user
+  const nowSecs   = Math.floor(Date.now() / 1000)
+  const expiresAt = nowSecs + 600  // 10 min from now, personal to this user
 
   // ── LOCK ──────────────────────────────────────────────────────────────────
   const lockKey = `pi_lock_${user.id}_${tierId}_${eventId}`
@@ -117,7 +116,7 @@ export async function POST(request: Request) {
       })
 
       const idempotencyKey =
-        `pi_${user.id}_${tierId}_${quantity}_${totalAmountCentavos}_${windowBucket}`
+        `pi_${user.id}_${tierId}_${quantity}_${totalAmountCentavos}_${expiresAt}`
 
       try {
         paymentIntent = await stripe.paymentIntents.create(
