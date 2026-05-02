@@ -99,7 +99,7 @@ export default async function EventDetailPage({
 
         <div className="absolute inset-x-0 bottom-0 px-4 pb-5 sm:px-6 sm:pb-7">
           <h1
-            className="font-display text-white font-bold leading-tight break-words"
+            className="font-display text-white font-bold leading-tight wrap-break-word"
             style={{ fontSize: 'clamp(1.4rem, 5vw, 3.5rem)' }}
           >
             {event.title}
@@ -162,7 +162,7 @@ export default async function EventDetailPage({
                   <MapPin size={13} />
                   Ubicación
                 </h2>
-                <p className="text-sm break-words" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <p className="text-sm wrap-break-word" style={{ color: 'rgba(255,255,255,0.5)' }}>
                   {venue.address}{venue.city ? `, ${venue.city}` : ''}
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default async function EventDetailPage({
                   style={{ color: 'rgba(255,255,255,0.4)' }}>
                   Acerca del evento
                 </h2>
-                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap"
+                <p className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap"
                   style={{ color: 'rgba(255,255,255,0.7)', overflowWrap: 'anywhere' }}>
                   {event.description}
                 </p>

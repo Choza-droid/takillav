@@ -136,7 +136,7 @@ function ReviewRow({ review, onDelete, onUpdate }: {
       ) : (
         <>
           <StarRating value={review.rating} size={16} />
-          <p className="text-sm leading-relaxed break-words whitespace-pre-wrap" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          <p className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap" style={{ color: 'rgba(255,255,255,0.75)' }}>
             {review.comment}
           </p>
           {review.photoUrl && (

@@ -120,9 +120,9 @@ export default async function OrganizerProfilePage({
       {/* ── Hero info (name, bio, stars) ───────────────────────────────── */}
       <div className="w-full max-w-4xl mx-auto px-4" style={{ paddingTop: 64 }}>
         <div className="mb-10">
-          <h1 className="text-2xl font-bold text-white break-words">{organizer.business_name}</h1>
+          <h1 className="text-2xl font-bold text-white wrap-break-word">{organizer.business_name}</h1>
           {organizer.bio && (
-            <p className="text-sm mt-1.5 break-words" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            <p className="text-sm mt-1.5 wrap-break-word" style={{ color: 'rgba(255,255,255,0.55)' }}>
               {organizer.bio}
             </p>
           )}
